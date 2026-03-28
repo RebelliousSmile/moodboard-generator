@@ -1,0 +1,32 @@
+/* App-level styles — mostly empty, all component styles are in their own CSS files */
+
+button {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  border: .5px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background .15s, color .15s;
+}
+
+button:hover { background: var(--ink); color: var(--bg); }
+button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+button.primary:hover { background: #3A3020; border-color: #3A3020; }
+button:disabled { opacity: .4; cursor: default; }
+
+@media print {
+  /* @page size & margin sont injectés dynamiquement par ExportBar selon le format choisi */
+  body { background: var(--bg) !important; }
+  .editor, .export-bar, .settings-panel, .sp-toggle { display: none !important; }
+  .dl { display: none !important; }
+  .board { gap: 3px !important; }
+  .card.full  { height: 360px !important; }
+  .card.tall  { height: 290px !important; }
+  .card.half  { height: 230px !important; }
+  .card.third { height: 165px !important; }
+}

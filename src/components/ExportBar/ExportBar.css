@@ -1,0 +1,33 @@
+.export-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 44px;
+  background: rgba(234, 228, 218, .92);
+  backdrop-filter: blur(8px);
+  border-bottom: .5px solid var(--rule);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.export-left,
+.export-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.format-select {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 7px 10px;
+  border: .5px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 3px;
+  cursor: pointer;
+  outline: none;
+}

@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Space+Mono:ital@0;1&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #EAE4DA;
+  --ink: #1A1714;
+  --muted: #908880;
+  --rule: #B0A898;
+  --tag: #8CB88C;
+  --card-bg: #1A1714;
+  --loc: rgba(205,192,172,.68);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+}
