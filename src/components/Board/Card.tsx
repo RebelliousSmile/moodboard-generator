@@ -12,9 +12,10 @@ const FALLBACKS = [
 interface CardProps {
   image: ImageEntry;
   index: number;
+  gapStyle?: React.CSSProperties;
 }
 
-export function Card({ image, index }: CardProps) {
+export function Card({ image, index, gapStyle }: CardProps) {
   const [imgError, setImgError] = useState(false);
   const [src, setSrc] = useState(() => getCachedSrc(image.url) || '');
   const taille = image.taille || 'half';
@@ -36,7 +37,7 @@ export function Card({ image, index }: CardProps) {
   }, [image.url]);
 
   return (
-    <div className={`card ${taille}`} style={{ background: fb }}>
+    <div className={`card ${taille}`} style={{ background: fb, ...gapStyle }}>
       {!imgError && src && (
         <img
           src={src}

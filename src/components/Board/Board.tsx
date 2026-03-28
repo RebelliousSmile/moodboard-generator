@@ -9,9 +9,7 @@ interface BoardProps {
 }
 
 export const Board = forwardRef<HTMLDivElement, BoardProps>(({ data, settings }, ref) => {
-  const cssVars = {
-    '--board-columns': settings.columns,
-    '--board-gap': `${settings.gap}px`,
+  const wrapStyle = {
     '--card-radius': `${settings.borderRadius}px`,
     '--img-brightness': settings.brightness,
     '--img-contrast': settings.contrast,
@@ -21,8 +19,17 @@ export const Board = forwardRef<HTMLDivElement, BoardProps>(({ data, settings },
     background: settings.bgColor,
   } as React.CSSProperties;
 
+  const boardStyle: React.CSSProperties = {
+    columnCount: settings.columns,
+    columnGap: `${settings.gap}px`,
+  };
+
+  const cardGap: React.CSSProperties = {
+    marginBottom: `${settings.gap}px`,
+  };
+
   return (
-    <div ref={ref} className="mb-wrap" style={cssVars}>
+    <div ref={ref} className="mb-wrap" style={wrapStyle}>
       <div className="mb-header">
         <h1>{data.scenario}</h1>
         {data.contexte && (
@@ -30,9 +37,9 @@ export const Board = forwardRef<HTMLDivElement, BoardProps>(({ data, settings },
         )}
       </div>
 
-      <div className="board">
+      <div className="board" style={boardStyle}>
         {data.images.map((img, i) => (
-          <Card key={img.url} image={img} index={i} />
+          <Card key={img.url} image={img} index={i} gapStyle={cardGap} />
         ))}
       </div>
     </div>

@@ -15,6 +15,9 @@ export async function exportPdf(
   format: PdfFormat = 'a4-portrait',
 ): Promise<void> {
   const dims = FORMAT_DIMS[format];
+  const margin = 8;
+  const contentW = dims.w - margin * 2;
+  const contentH = dims.h - margin * 2;
 
   const canvas = await html2canvas(element, {
     scale: 2,
@@ -23,25 +26,31 @@ export async function exportPdf(
     backgroundColor: null,
   });
 
-  const imgData = canvas.toDataURL('image/jpeg', 0.92);
   const pdf = new jsPDF(dims.orient, 'mm', dims.format);
 
-  const pageW = dims.w;
-  const pageH = dims.h;
-  const margin = 8;
-  const contentW = pageW - margin * 2;
+  // Largeur réelle de l'image en mm, calée sur la largeur de page
+  const imgWidthMm = contentW;
+  const pxPerMm = canvas.width / imgWidthMm;
+  const pageHeightPx = contentH * pxPerMm;
 
-  const imgRatio = canvas.height / canvas.width;
-  const contentH = contentW * imgRatio;
+  const totalPages = Math.ceil(canvas.height / pageHeightPx);
 
-  if (contentH <= pageH - margin * 2) {
-    pdf.addImage(imgData, 'JPEG', margin, margin, contentW, contentH);
-  } else {
-    // Scale to fit page height
-    const fitH = pageH - margin * 2;
-    const fitW = fitH / imgRatio;
-    const offsetX = (pageW - fitW) / 2;
-    pdf.addImage(imgData, 'JPEG', offsetX, margin, fitW, fitH);
+  for (let page = 0; page < totalPages; page++) {
+    if (page > 0) pdf.addPage();
+
+    const srcY = page * pageHeightPx;
+    const sliceH = Math.min(pageHeightPx, canvas.height - srcY);
+
+    // Découper une tranche du canvas pour cette page
+    const pageCanvas = document.createElement('canvas');
+    pageCanvas.width = canvas.width;
+    pageCanvas.height = sliceH;
+    const ctx = pageCanvas.getContext('2d')!;
+    ctx.drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+
+    const imgData = pageCanvas.toDataURL('image/jpeg', 0.92);
+    const sliceHMm = sliceH / pxPerMm;
+    pdf.addImage(imgData, 'JPEG', margin, margin, imgWidthMm, sliceHMm);
   }
 
   pdf.save(filename);

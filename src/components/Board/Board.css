@@ -30,11 +30,8 @@
   line-height: 1.8;
 }
 
-/* ── Grille masonry — pilotée par CSS custom properties ── */
-.board {
-  column-count: var(--board-columns, 2);
-  column-gap: var(--board-gap, 5px);
-}
+/* ── Grille masonry ── */
+.board {}
 
 /* ── Cartes ── */
 .card {
@@ -43,7 +40,6 @@
   background: var(--card-bg);
   border-radius: var(--card-radius, 0);
   break-inside: avoid;
-  margin-bottom: var(--board-gap, 5px);
 }
 
 .card.full  { column-span: all; height: 420px; }
