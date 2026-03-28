@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
+import { downloadSkill } from '../../utils/skillContent';
 import type { MoodboardData } from '../../types';
 import './Editor.css';
 
@@ -35,8 +36,8 @@ export function Editor({ onGenerate }: EditorProps) {
   }, []);
 
   const handleFile = useCallback((file: File) => {
-    if (!file.name.endsWith('.json')) {
-      setError('Seuls les fichiers .json sont acceptés.');
+    if (!file.name.match(/\.(json|yaml|yml)$/)) {
+      setError('Seuls les fichiers .json, .yaml ou .yml sont acceptés.');
       return;
     }
     const reader = new FileReader();
@@ -76,7 +77,7 @@ export function Editor({ onGenerate }: EditorProps) {
           value={value}
           onChange={e => { setValue(e.target.value); setError(''); }}
           spellCheck={false}
-          placeholder='Collez votre JSON ici ou glissez un fichier .json...'
+          placeholder='Collez votre JSON ou YAML ici, ou glissez un fichier .json / .yaml...'
         />
         {dragOver && <div className="drop-overlay">Déposez le fichier .json</div>}
       </div>
@@ -90,7 +91,7 @@ export function Editor({ onGenerate }: EditorProps) {
         <input
           ref={fileRef}
           type="file"
-          accept=".json"
+          accept=".json,.yaml,.yml"
           onChange={handleFileInput}
           style={{ display: 'none' }}
         />
@@ -100,7 +101,16 @@ export function Editor({ onGenerate }: EditorProps) {
         Structure JSON attendue :<br />
         <code>"scenario"</code> : Titre &nbsp;·&nbsp;
         <code>"contexte"</code> : Ligne courte &nbsp;·&nbsp;
-        <code>"images"</code> : tableau avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
+        <code>"images"</code> (ou <code>images:</code> en YAML) : liste avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
+      </div>
+
+      <div className="skill-row">
+        <button className="skill-btn" onClick={downloadSkill}>
+          ↓ Télécharger le skill IA
+        </button>
+        <span className="skill-hint">
+          Skill Claude Code pour générer le fichier de référence via l'IA
+        </span>
       </div>
     </div>
   );

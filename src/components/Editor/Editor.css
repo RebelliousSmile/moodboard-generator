@@ -99,3 +99,31 @@
   border-radius: 2px;
   font-size: 9.5px;
 }
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: .5px solid var(--rule);
+}
+
+.skill-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-color: var(--muted) !important;
+  color: var(--muted) !important;
+}
+
+.skill-btn:hover {
+  background: var(--muted) !important;
+  color: var(--bg) !important;
+}
+
+.skill-hint {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .04em;
+  line-height: 1.6;
+}
