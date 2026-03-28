@@ -1,13 +1,19 @@
 import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
-import { downloadSkill } from '../../utils/skillContent';
+import { downloadSkill, DEFAULT_THEMES, type AgentType } from '../../utils/skillContent';
 import type { MoodboardData } from '../../types';
 import './Editor.css';
 
 interface EditorProps {
   onGenerate: (data: MoodboardData) => void;
 }
+
+const AGENTS: { value: AgentType; label: string; desc: string }[] = [
+  { value: 'claude-code', label: 'Claude Code', desc: 'extraction DOM automatique' },
+  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot', desc: 'recherche web intégrée' },
+  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre', desc: 'recherche web + URLs manuelles' },
+];
 
 export function Editor({ onGenerate }: EditorProps) {
   const [value, setValue] = useState('');
@@ -16,7 +22,9 @@ export function Editor({ onGenerate }: EditorProps) {
   const [skillOpen, setSkillOpen] = useState(false);
   const [sujet, setSujet] = useState('');
   const [contexte, setContexte] = useState('');
-  const [themes, setThemes] = useState('');
+  const [agent, setAgent] = useState<AgentType>('claude-code');
+  const [themes, setThemes] = useState<string[]>([...DEFAULT_THEMES]);
+  const [customTheme, setCustomTheme] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleGenerate = useCallback(() => {
@@ -64,10 +72,23 @@ export function Editor({ onGenerate }: EditorProps) {
     if (file) handleFile(file);
   }, [handleFile]);
 
+  const toggleTheme = useCallback((theme: string) => {
+    setThemes(prev =>
+      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+    );
+  }, []);
+
+  const addCustomTheme = useCallback(() => {
+    const t = customTheme.trim();
+    if (!t) return;
+    if (!themes.includes(t)) setThemes(prev => [...prev, t]);
+    setCustomTheme('');
+  }, [customTheme, themes]);
+
   const handleDownloadSkill = useCallback(() => {
     if (!sujet.trim()) return;
-    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes: themes.trim() });
-  }, [sujet, contexte, themes]);
+    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent });
+  }, [sujet, contexte, themes, agent]);
 
   return (
     <div className="editor">
@@ -124,9 +145,30 @@ export function Editor({ onGenerate }: EditorProps) {
         {skillOpen && (
           <div className="skill-form">
             <p className="skill-form-desc">
-              Génère un fichier d'instructions pour demander à votre IA de créer le fichier de données du moodboard. Compatible Claude Code, Cursor, Copilot, ChatGPT, Gemini.
+              Génère un fichier d'instructions pour demander à votre IA de créer le fichier de données du moodboard.
             </p>
 
+            {/* Agent */}
+            <div className="skill-field">
+              <span className="skill-field-label">Agent IA</span>
+              <div className="agent-list">
+                {AGENTS.map(a => (
+                  <label key={a.value} className={`agent-option${agent === a.value ? ' selected' : ''}`}>
+                    <input
+                      type="radio"
+                      name="agent"
+                      value={a.value}
+                      checked={agent === a.value}
+                      onChange={() => setAgent(a.value)}
+                    />
+                    <span className="agent-name">{a.label}</span>
+                    <span className="agent-desc">{a.desc}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Sujet */}
             <label className="skill-label">
               Sujet du moodboard <span className="required">*</span>
               <input
@@ -138,6 +180,7 @@ export function Editor({ onGenerate }: EditorProps) {
               />
             </label>
 
+            {/* Contexte */}
             <label className="skill-label">
               Contexte <span className="optional">(optionnel)</span>
               <input
@@ -149,16 +192,35 @@ export function Editor({ onGenerate }: EditorProps) {
               />
             </label>
 
-            <label className="skill-label">
-              Thèmes visuels à couvrir <span className="optional">(optionnel — un par ligne)</span>
-              <textarea
-                value={themes}
-                onChange={e => setThemes(e.target.value)}
-                placeholder={"lieu principal\nambiance climatique\nmoment clé\n..."}
-                className="skill-themes"
-                rows={5}
-              />
-            </label>
+            {/* Thèmes */}
+            <div className="skill-field">
+              <span className="skill-field-label">
+                Thèmes visuels à couvrir <span className="optional">(décocher pour exclure)</span>
+              </span>
+              <div className="themes-list">
+                {[...DEFAULT_THEMES, ...themes.filter(t => !DEFAULT_THEMES.includes(t))].map(theme => (
+                  <label key={theme} className={`theme-option${themes.includes(theme) ? ' checked' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={themes.includes(theme)}
+                      onChange={() => toggleTheme(theme)}
+                    />
+                    <span>{theme}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="theme-add">
+                <input
+                  type="text"
+                  value={customTheme}
+                  onChange={e => setCustomTheme(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && addCustomTheme()}
+                  placeholder="Ajouter un thème..."
+                  className="skill-input theme-add-input"
+                />
+                <button onClick={addCustomTheme} disabled={!customTheme.trim()} className="theme-add-btn">+</button>
+              </div>
+            </div>
 
             <div className="skill-form-actions">
               <button

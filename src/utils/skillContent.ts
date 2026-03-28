@@ -1,25 +1,69 @@
+export type AgentType = 'claude-code' | 'cursor' | 'chatgpt';
+
 export interface SkillOptions {
   sujet: string;
   contexte: string;
-  themes: string;
+  themes: string[];
+  agent: AgentType;
 }
 
-export function generateSkillContent({ sujet, contexte, themes }: SkillOptions): string {
-  const themesBlock = themes.trim()
-    ? themes.trim().split('\n').filter(Boolean).map(t => `- ${t.replace(/^-\s*/, '')}`).join('\n')
-    : `- Lieu principal ou emblématique
-- Ambiance générale (lumière, saison, atmosphère)
-- Détail ou texture caractéristique
-- Moment ou activité liée au sujet
-- Contraste ou tension visuelle
-- Élément humain ou d'échelle`;
+export const DEFAULT_THEMES = [
+  'Lieu principal ou emblématique',
+  'Ambiance générale (lumière, saison, atmosphère)',
+  'Détail ou texture caractéristique',
+  'Moment ou activité liée au sujet',
+  'Contraste ou tension visuelle',
+  'Élément humain ou d\'échelle',
+];
+
+const AGENT_LABELS: Record<AgentType, string> = {
+  'claude-code': 'Claude Code',
+  'cursor': 'Cursor / Windsurf / Copilot',
+  'chatgpt': 'ChatGPT / Gemini / Autre',
+};
+
+function getExtractSection(agent: AgentType): string {
+  if (agent === 'claude-code') {
+    return `Naviguer vers la page et extraire les URLs via ce script :
+
+\`\`\`javascript
+Array.from(document.querySelectorAll('img[src], img[data-src], img[data-lazy-src]'))
+  .map(i => i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || i.src)
+  .filter(s => s && s.match(/\\.(jpg|jpeg|png|webp)/i)
+    && !s.includes('logo') && !s.includes('icon')
+    && !s.includes('150x') && !s.includes('300x'))
+  .slice(0, 20)
+\`\`\`
+
+Utiliser \`image_search\` pour trouver les images, puis naviguer vers les pages sources pour extraire les URLs réelles depuis le DOM.`;
+  }
+
+  if (agent === 'cursor') {
+    return `Utiliser la recherche web intégrée pour trouver les pages sources.
+Naviguer vers chaque page et noter l'URL directe de l'image (clic droit → "Copier l'adresse de l'image" ou inspecter le DOM).
+Ne jamais inventer une URL — vérifier qu'elle est accessible.`;
+  }
+
+  return `Utiliser la recherche web pour trouver des pages contenant les images souhaitées.
+Noter les URLs d'images directement visibles dans les résultats ou les pages visitées.
+Si une URL ne peut pas être confirmée, demander à l'utilisateur de fournir les URLs des images qu'il a sélectionnées manuellement.`;
+}
+
+export function generateSkillContent({ sujet, contexte, themes, agent }: SkillOptions): string {
+  const themesBlock = themes.length > 0
+    ? themes.map(t => `- ${t}`).join('\n')
+    : DEFAULT_THEMES.map(t => `- ${t}`).join('\n');
+
+  const agentLabel = AGENT_LABELS[agent];
+  const extractSection = getExtractSection(agent);
 
   return `---
 name: moodboard-generator
 description: >
   Génère un fichier YAML de données pour alimenter l'application moodboard-generator.
-  Sujet : ${sujet}. Recherche des images réelles, extrait les vraies URLs depuis le DOM
-  ou via web search, et produit un fichier YAML structuré prêt à coller dans l'application.
+  Sujet : ${sujet}. Recherche des images réelles et produit un fichier YAML structuré
+  prêt à coller dans l'application.
+agent: ${agentLabel}
 ---
 
 # Moodboard — ${sujet}
@@ -61,7 +105,7 @@ images:
 
 ### Champs par image
 
-- **url** : URL directe extraite depuis le DOM ou la page — jamais inventée
+- **url** : URL directe et vérifiable — jamais inventée
 - **lieu** : lieu précis (ville, bâtiment, quartier) — pas juste le pays
 - **date** : année, décennie, \`aujourd'hui\`, ou \`inconnu\`
 - **taille** : \`full\` (grande impact), \`tall\` (secondaire pleine largeur), \`half\` (paire), \`third\` (petit)
@@ -77,8 +121,6 @@ Viser 8 à 12 images au total, en couvrant chaque thème.
 
 ### Étape 2 — Trouver les images
 
-Utiliser la recherche d'images disponible *(via \`image_search\` sur Claude Code, ou web search sur les autres LLMs)*.
-
 **Sources fiables (pas de watermark, pas de restriction CORS)** :
 - \`upload.wikimedia.org\` — domaine public
 - \`encirclephotos.com\` — photographies monde entier
@@ -90,18 +132,7 @@ Utiliser la recherche d'images disponible *(via \`image_search\` sur Claude Code
 
 ### Étape 3 — Extraire les URLs
 
-**Sur Claude Code** — naviguer vers la page et extraire via ce script :
-
-\`\`\`javascript
-Array.from(document.querySelectorAll('img[src], img[data-src], img[data-lazy-src]'))
-  .map(i => i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || i.src)
-  .filter(s => s && s.match(/\\.(jpg|jpeg|png|webp)/i)
-    && !s.includes('logo') && !s.includes('icon')
-    && !s.includes('150x') && !s.includes('300x'))
-  .slice(0, 20)
-\`\`\`
-
-**Sur les autres LLMs** — noter l'URL de l'image telle qu'elle apparaît dans la page visitée, ou demander à l'utilisateur de fournir les URLs des images qu'il a sélectionnées.
+${extractSection}
 
 ### Étape 4 — Choisir les tailles
 
