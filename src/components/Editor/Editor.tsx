@@ -131,10 +131,14 @@ export function Editor({ onGenerate }: EditorProps) {
 
   return (
     <div className="editor">
-      <div className="editor-header">
-        <h1>Moodboard Generator</h1>
+      <header className="editor-header">
+        <h1>Moodboard</h1>
         <p>JSON · YAML</p>
-      </div>
+      </header>
+
+      <p className="editor-tagline">
+        Composez des planches visuelles pour vos scenarios JDR, recits de fiction, carnets de voyage ou projets creatifs — a partir d'un simple fichier JSON ou YAML.
+      </p>
 
       <div
         className={`textarea-wrap${dragOver ? ' drag-over' : ''}`}
@@ -289,6 +293,39 @@ export function Editor({ onGenerate }: EditorProps) {
           </div>
         )}
       </div>
+
+      {/* ── Presentation / SEO ── */}
+      <section className="about-section">
+        <h2>Comment ca marche</h2>
+        <div className="about-grid">
+          <div className="about-card">
+            <strong>1. Preparez vos donnees</strong>
+            <p>Decrivez votre moodboard en JSON ou YAML : titre du scenario, images avec lieu, date et tags. Importez un fichier ou collez directement dans l'editeur.</p>
+          </div>
+          <div className="about-card">
+            <strong>2. Generez avec l'IA</strong>
+            <p>Utilisez la Skill IA pour creer un fichier d'instructions. Claude, ChatGPT ou Cursor recherchent les images et produisent le fichier de donnees pour vous.</p>
+          </div>
+          <div className="about-card">
+            <strong>3. Visualisez et personnalisez</strong>
+            <p>Grille masonry a 2, 3 ou 4 colonnes. Ajustez les couleurs, filtres, espacement et taille des cartes. Le rendu s'adapte en temps reel.</p>
+          </div>
+          <div className="about-card">
+            <strong>4. Exportez et partagez</strong>
+            <p>Export PDF multi-pages en A4 ou A3, portrait ou paysage. Partagez un lien permanent — le moodboard se reconstruit directement depuis l'URL.</p>
+          </div>
+        </div>
+
+        <h2>A qui s'adresse cet outil</h2>
+        <ul className="about-usecases">
+          <li><strong>Scenaristes JDR</strong> — planches d'ambiance pour vos campagnes et one-shots</li>
+          <li><strong>Auteurs et autrices</strong> — references visuelles pour vos univers de fiction</li>
+          <li><strong>Voyageurs</strong> — carnets d'inspiration avant ou apres un voyage</li>
+          <li><strong>Illustrateurs</strong> — collecte de references graphiques et chromatiques</li>
+          <li><strong>Decorateurs</strong> — planches tendance pour projets d'amenagement</li>
+          <li><strong>Equipes creatives</strong> — support visuel a partager en un lien</li>
+        </ul>
+      </section>
     </div>
   );
 }

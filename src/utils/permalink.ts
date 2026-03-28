@@ -34,10 +34,24 @@ export function clearHash(): void {
 }
 
 export async function copyPermalink(): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(location.href);
-    return true;
-  } catch {
-    return false;
+  const url = location.href;
+
+  // Clipboard API (HTTPS uniquement)
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(url);
+      return true;
+    } catch { /* fallback ci-dessous */ }
   }
+
+  // Fallback pour HTTP : textarea + execCommand
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  const ok = document.execCommand('copy');
+  document.body.removeChild(ta);
+  return ok;
 }

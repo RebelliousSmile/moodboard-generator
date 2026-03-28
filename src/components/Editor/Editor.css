@@ -27,6 +27,14 @@
   text-transform: uppercase;
 }
 
+.editor-tagline {
+  font-family: 'IM Fell English', serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
 .textarea-wrap {
   position: relative;
 }
@@ -410,4 +418,76 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+/* ── Section presentation ── */
+
+.about-section {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: .5px solid var(--rule);
+}
+
+.about-section h2 {
+  font-family: 'IM Fell English', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: .03em;
+  margin: 0 0 18px;
+}
+
+.about-section h2:nth-of-type(n+2) {
+  margin-top: 32px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.about-card {
+  border: .5px solid var(--rule);
+  border-radius: 4px;
+  padding: 16px 18px;
+}
+
+.about-card strong {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.about-card p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+
+.about-usecases {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-usecases li {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  padding-left: 14px;
+  border-left: 1.5px solid var(--rule);
+}
+
+.about-usecases li strong {
+  color: var(--ink);
 }

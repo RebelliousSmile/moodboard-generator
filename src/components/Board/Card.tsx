@@ -27,7 +27,6 @@ export function Card({ image, index, gapStyle }: CardProps) {
         <img
           src={image.url}
           alt={image.lieu || ''}
-          crossOrigin="anonymous"
           style={{ objectPosition: pos }}
           onError={() => setImgError(true)}
         />
