@@ -287,12 +287,12 @@
 .agent-name {
   font-family: 'Space Mono', monospace;
   font-size: 11px;
-  color: #C8C0A8;
+  color: #7A7060;
   flex-shrink: 0;
 }
 
 .agent-option.selected .agent-name {
-  color: #E0D8C0;
+  color: #2E2820;
 }
 
 .agent-desc {

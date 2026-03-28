@@ -1,4 +1,4 @@
-export type AgentType = 'claude-code' | 'cursor' | 'chatgpt';
+export type AgentType = 'claude-code' | 'claude-ia' | 'cursor' | 'chatgpt';
 
 export interface SkillOptions {
   sujet: string;
@@ -18,6 +18,7 @@ export const DEFAULT_THEMES = [
 
 const AGENT_LABELS: Record<AgentType, string> = {
   'claude-code': 'Claude Code',
+  'claude-ia': 'Claude IA (claude.ai)',
   'cursor': 'Cursor / Windsurf / Copilot',
   'chatgpt': 'ChatGPT / Gemini / Autre',
 };
@@ -36,6 +37,12 @@ Array.from(document.querySelectorAll('img[src], img[data-src], img[data-lazy-src
 \`\`\`
 
 Utiliser \`image_search\` pour trouver les images, puis naviguer vers les pages sources pour extraire les URLs réelles depuis le DOM.`;
+  }
+
+  if (agent === 'claude-ia') {
+    return `Utiliser la recherche web (outil intégré) pour trouver des pages sources.
+Visiter chaque page et noter l'URL directe de l'image telle qu'elle apparaît dans le contenu.
+Ne jamais inventer une URL — si elle n'est pas visible dans la page, indiquer le thème comme non couvert.`;
   }
 
   if (agent === 'cursor') {

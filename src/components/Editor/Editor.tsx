@@ -10,9 +10,10 @@ interface EditorProps {
 }
 
 const AGENTS: { value: AgentType; label: string; desc: string }[] = [
-  { value: 'claude-code', label: 'Claude Code', desc: 'extraction DOM automatique' },
-  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot', desc: 'recherche web intégrée' },
-  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre', desc: 'recherche web + URLs manuelles' },
+  { value: 'claude-code', label: 'Claude Code',                  desc: 'extraction DOM automatique' },
+  { value: 'claude-ia',   label: 'Claude IA (claude.ai)',         desc: 'recherche web intégrée' },
+  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot',  desc: 'recherche web + IDE' },
+  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',     desc: 'recherche web + URLs manuelles' },
 ];
 
 export function Editor({ onGenerate }: EditorProps) {
