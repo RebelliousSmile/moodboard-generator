@@ -48,20 +48,34 @@ export function generateSkillContent({ sujet, contexte, themes, agent }: SkillOp
   const agentLabel = AGENT_LABELS[agent];
   const extractSection = getExtractSection(agent);
 
+  const hasSujet = sujet.trim().length > 0;
+  const hasContexte = contexte.trim().length > 0;
+
+  const sujetVal = hasSujet ? sujet.trim() : '[SUJET]';
+  const contexteVal = hasContexte ? contexte.trim() : '[CONTEXTE]';
+
+  const variablesNote = (!hasSujet || !hasContexte) ? `
+## Variables à définir
+
+Avant de commencer, demander à l'utilisateur de préciser :
+${!hasSujet ? '- **[SUJET]** — le sujet du moodboard (lieu, thème, univers, projet...)' : ''}${!hasContexte ? '\n- **[CONTEXTE]** — informations complémentaires (période, style, ambiance...)' : ''}
+
+` : '';
+
   return `---
 name: moodboard-generator
 description: >
   Génère un fichier YAML de données pour alimenter l'application moodboard-generator.
-  Sujet : ${sujet}. Recherche des images réelles et produit un fichier YAML structuré
+  ${hasSujet ? `Sujet : ${sujetVal}.` : 'Le sujet sera demandé à l\'utilisateur.'} Recherche des images réelles et produit un fichier YAML structuré
   prêt à coller dans l'application.
 agent: ${agentLabel}
 ---
 
-# Moodboard — ${sujet}
-
+# Moodboard — ${sujetVal}
+${variablesNote}
 ## Contexte
 
-${contexte || `Créer un moodboard visuel sur le sujet : **${sujet}**.`}
+${hasContexte ? contexteVal : hasSujet ? `Créer un moodboard visuel sur le sujet : **${sujetVal}**.` : `Créer un moodboard visuel sur le sujet : **[SUJET]**. Adapter selon les précisions de l'utilisateur.`}
 
 ## Objectif
 
@@ -71,8 +85,8 @@ Ce fichier contient uniquement les données (URLs, lieux, dates, tags) — l'app
 ## Format de sortie
 
 \`\`\`yaml
-scenario: ${sujet}
-contexte: ${contexte || sujet}
+scenario: ${sujetVal}
+contexte: ${contexteVal}
 
 images:
 
@@ -151,8 +165,8 @@ Privilegier des tags de **lecture** plutôt que de simple description :
 Produire un bloc YAML valide dans un code block, prêt à copier-coller :
 
 \`\`\`yaml
-scenario: ${sujet}
-contexte: ${contexte || sujet}
+scenario: ${sujetVal}
+contexte: ${contexteVal}
 images:
   - url: ...
     ...

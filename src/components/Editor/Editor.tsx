@@ -9,6 +9,45 @@ interface EditorProps {
   onGenerate: (data: MoodboardData) => void;
 }
 
+const USAGES: { value: string; label: string; sujet: string; contexte: string }[] = [
+  {
+    value: 'voyage',
+    label: 'Voyage',
+    sujet: 'ex : Norvège en hiver, road trip côte pacifique...',
+    contexte: 'ex : Printemps · 2 semaines · Villes et nature',
+  },
+  {
+    value: 'fiction',
+    label: 'Fiction',
+    sujet: 'ex : polar noir années 50, fantasy nordique...',
+    contexte: 'ex : Chicago · Ambiance sombre · Années 1950',
+  },
+  {
+    value: 'illustration',
+    label: 'Illustration',
+    sujet: 'ex : portrait en lumière tamisée, architecture gothique...',
+    contexte: 'ex : Style graphique · Noir et blanc · Ombres fortes',
+  },
+  {
+    value: 'deco',
+    label: 'Décoration',
+    sujet: 'ex : salon minimaliste, cuisine rustique...',
+    contexte: 'ex : Palette terreuse · Matières naturelles · Lumière douce',
+  },
+  {
+    value: 'mode',
+    label: 'Mode',
+    sujet: 'ex : vestiaire automne-hiver, allure sportswear...',
+    contexte: 'ex : Palette neutre · Oversized · Textures',
+  },
+  {
+    value: 'jdr',
+    label: 'Jeu de rôle',
+    sujet: 'ex : scénario cyberpunk, campagne fantasy médiévale...',
+    contexte: 'ex : Futuriste · Dystopie · Mégalopole asiatique',
+  },
+];
+
 const AGENTS: { value: AgentType; label: string; desc: string }[] = [
   { value: 'claude-ia',   label: 'Claude IA (claude.ai)',        desc: 'recherche web intégrée' },
   { value: 'cursor',      label: 'Cursor / Windsurf / Copilot', desc: 'recherche web + IDE' },
@@ -20,6 +59,7 @@ export function Editor({ onGenerate }: EditorProps) {
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [skillOpen, setSkillOpen] = useState(false);
+  const [usage, setUsage] = useState(USAGES[0].value);
   const [sujet, setSujet] = useState('');
   const [contexte, setContexte] = useState('');
   const [agent, setAgent] = useState<AgentType>('claude-ia');
@@ -86,7 +126,6 @@ export function Editor({ onGenerate }: EditorProps) {
   }, [customTheme, themes]);
 
   const handleDownloadSkill = useCallback(() => {
-    if (!sujet.trim()) return;
     downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent });
   }, [sujet, contexte, themes, agent]);
 
@@ -168,14 +207,31 @@ export function Editor({ onGenerate }: EditorProps) {
               </div>
             </div>
 
+            {/* Usage */}
+            <div className="skill-field">
+              <span className="skill-field-label">Usage</span>
+              <div className="usage-pills">
+                {USAGES.map(u => (
+                  <button
+                    key={u.value}
+                    className={`usage-pill${usage === u.value ? ' selected' : ''}`}
+                    onClick={() => setUsage(u.value)}
+                    type="button"
+                  >
+                    {u.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Sujet */}
             <label className="skill-label">
-              Sujet du moodboard <span className="required">*</span>
+              Sujet du moodboard <span className="optional">(optionnel — laisser vide pour que l'IA le demande)</span>
               <input
                 type="text"
                 value={sujet}
                 onChange={e => setSujet(e.target.value)}
-                placeholder="ex : voyage au Japon, architecture brutaliste, polar noir années 50..."
+                placeholder={USAGES.find(u => u.value === usage)?.sujet ?? ''}
                 className="skill-input"
               />
             </label>
@@ -187,7 +243,7 @@ export function Editor({ onGenerate }: EditorProps) {
                 type="text"
                 value={contexte}
                 onChange={e => setContexte(e.target.value)}
-                placeholder="ex : Contemporain · Europe du Nord · Ambiance hivernale"
+                placeholder={USAGES.find(u => u.value === usage)?.contexte ?? ''}
                 className="skill-input"
               />
             </label>
@@ -226,13 +282,9 @@ export function Editor({ onGenerate }: EditorProps) {
               <button
                 className="primary"
                 onClick={handleDownloadSkill}
-                disabled={!sujet.trim()}
               >
                 ↓ Télécharger la skill
               </button>
-              {!sujet.trim() && (
-                <span className="skill-form-hint">Le sujet est requis</span>
-              )}
             </div>
           </div>
         )}

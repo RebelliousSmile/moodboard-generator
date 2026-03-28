@@ -252,6 +252,39 @@
   letter-spacing: .04em;
 }
 
+/* ── Usage pills ── */
+
+.usage-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.usage-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: .5px solid #3A3428;
+  border-radius: 20px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.usage-pill:hover:not(.selected) {
+  border-color: #6A6050;
+  color: #9A9080;
+}
+
+.usage-pill.selected {
+  background: #3A3428;
+  border-color: #3A3428;
+  color: #C8C0A8;
+}
+
 /* ── Agent selector ── */
 
 .agent-list {
