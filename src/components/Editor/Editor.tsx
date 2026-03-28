@@ -301,19 +301,16 @@ export function Editor({ onGenerate }: EditorProps) {
           Un moodboard est une planche d'images qui capture l'atmosphere d'un projet. On y rassemble des photos, des lieux, des textures, des ambiances — tout ce qui donne le ton et aide a se projeter. C'est un outil de travail pour tous ceux qui pensent en images : auteurs, voyageurs, decorateurs, illustrateurs, equipes creatives.
         </p>
 
-        {/* ── Visuels exemples ── */}
+        {/* ── Visuels exemples (degrades CSS) ── */}
         <div className="about-preview">
-          <div className="about-preview-card about-preview-wide">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Nagasaki_1945_-_Before_and_after_%28adjusted%29.jpg/1280px-Nagasaki_1945_-_Before_and_after_%28adjusted%29.jpg" alt="Exemple moodboard — Nagasaki" />
-            <span className="about-preview-caption">Scenario JDR · Nagasaki</span>
+          <div className="about-preview-card about-preview-wide about-mood-voyage">
+            <span className="about-preview-caption">Voyage · Cotes et lumiere</span>
           </div>
-          <div className="about-preview-card">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Dozakichurch01s3200.jpg/1280px-Dozakichurch01s3200.jpg" alt="Exemple moodboard — Eglise Goto" />
-            <span className="about-preview-caption">Iles Goto · Eglise</span>
+          <div className="about-preview-card about-mood-fiction">
+            <span className="about-preview-caption">Fiction · Ambiance sombre</span>
           </div>
-          <div className="about-preview-card">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Osezaki_lighthouse02s3200.jpg/1280px-Osezaki_lighthouse02s3200.jpg" alt="Exemple moodboard — Cap Osezaki" />
-            <span className="about-preview-caption">Cap Osezaki · Bout du monde</span>
+          <div className="about-preview-card about-mood-deco">
+            <span className="about-preview-caption">Decoration · Tons naturels</span>
           </div>
         </div>
 

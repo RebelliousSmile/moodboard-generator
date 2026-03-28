@@ -524,12 +524,16 @@
   height: 200px;
 }
 
-.about-preview-card img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(.85) contrast(1.05) saturate(.85);
+.about-mood-voyage {
+  background: linear-gradient(135deg, #4A6B7A 0%, #8AAFA0 40%, #D4C9A8 70%, #E8C890 100%);
+}
+
+.about-mood-fiction {
+  background: linear-gradient(160deg, #1A1418 0%, #2E2028 35%, #4A3040 65%, #28202A 100%);
+}
+
+.about-mood-deco {
+  background: linear-gradient(145deg, #C4B494 0%, #A89878 30%, #8A7A60 60%, #D4C4A4 100%);
 }
 
 .about-preview-caption {
