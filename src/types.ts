@@ -25,6 +25,14 @@ export interface BoardSettings {
   saturation: number;
 }
 
+export interface RecentEntry {
+  scenario: string;
+  contexte?: string;
+  hash: string;
+  timestamp: number;
+  imageCount: number;
+}
+
 export const DEFAULT_SETTINGS: BoardSettings = {
   bgColor: '#EAE4DA',
   textColor: 'rgba(205,192,172,.68)',

@@ -2,8 +2,17 @@ import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
 import { downloadSkill, DEFAULT_THEMES, type AgentType } from '../../utils/skillContent';
+import { loadRecent } from '../../utils/recentBoards';
+import { decodeRawHash } from '../../utils/permalink';
 import type { MoodboardData } from '../../types';
 import './Editor.css';
+
+function formatDate(ts: number): string {
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  }).format(new Date(ts));
+}
 
 interface EditorProps {
   onGenerate: (data: MoodboardData) => void;
@@ -65,6 +74,7 @@ export function Editor({ onGenerate }: EditorProps) {
   const [agent, setAgent] = useState<AgentType>('claude-ia');
   const [themes, setThemes] = useState<string[]>([...DEFAULT_THEMES]);
   const [customTheme, setCustomTheme] = useState('');
+  const [recents] = useState(() => loadRecent());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleGenerate = useCallback(() => {
@@ -129,6 +139,11 @@ export function Editor({ onGenerate }: EditorProps) {
     downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent });
   }, [sujet, contexte, themes, agent]);
 
+  const handleRecentClick = useCallback((hash: string) => {
+    const data = decodeRawHash(hash);
+    if (data) onGenerate(data);
+  }, [onGenerate]);
+
   return (
     <div className="editor">
       <header className="editor-header">
@@ -177,6 +192,26 @@ export function Editor({ onGenerate }: EditorProps) {
         <code>"contexte"</code> &nbsp;·&nbsp;
         <code>"images"</code> avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
       </div>
+
+      {/* ── Recents ── */}
+      {recents.length > 0 && (
+        <div className="recent-section">
+          <h2 className="recent-title">Moodboards recents</h2>
+          <ul className="recent-list">
+            {recents.map(r => (
+              <li key={r.hash} className="recent-item">
+                <button className="recent-link" onClick={() => handleRecentClick(r.hash)}>
+                  <span className="recent-scenario">{r.scenario}</span>
+                  {r.contexte && <span className="recent-contexte">{r.contexte}</span>}
+                  <span className="recent-meta">
+                    {r.imageCount} image{r.imageCount > 1 ? 's' : ''} · {formatDate(r.timestamp)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* ── Skill IA ── */}
       <div className="skill-section">

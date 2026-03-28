@@ -8,12 +8,10 @@ export function encodeToHash(data: MoodboardData): string {
   return HASH_PREFIX + compressToEncodedURIComponent(json);
 }
 
-export function decodeFromHash(): MoodboardData | null {
-  const hash = location.hash.slice(1); // remove #
-  if (!hash.startsWith(HASH_PREFIX)) return null;
-
+export function decodeRawHash(raw: string): MoodboardData | null {
+  if (!raw.startsWith(HASH_PREFIX)) return null;
   try {
-    const compressed = hash.slice(HASH_PREFIX.length);
+    const compressed = raw.slice(HASH_PREFIX.length);
     const json = decompressFromEncodedURIComponent(compressed);
     if (!json) return null;
     const data = JSON.parse(json) as MoodboardData;
@@ -22,6 +20,10 @@ export function decodeFromHash(): MoodboardData | null {
   } catch {
     return null;
   }
+}
+
+export function decodeFromHash(): MoodboardData | null {
+  return decodeRawHash(location.hash.slice(1));
 }
 
 export function pushHash(data: MoodboardData): void {

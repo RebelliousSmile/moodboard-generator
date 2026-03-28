@@ -4,7 +4,8 @@ import { Board } from './components/Board/Board';
 import { SettingsPanel } from './components/Settings/SettingsPanel';
 import { ExportBar } from './components/ExportBar/ExportBar';
 import { useBoardSettings } from './hooks/useBoardSettings';
-import { decodeFromHash, pushHash, clearHash } from './utils/permalink';
+import { decodeFromHash, encodeToHash, pushHash, clearHash } from './utils/permalink';
+import { saveRecent } from './utils/recentBoards';
 import type { MoodboardData } from './types';
 import './App.css';
 
@@ -22,7 +23,9 @@ export default function App() {
   const handleGenerate = useCallback((d: MoodboardData) => {
     setData(d);
     setView('board');
+    const hash = encodeToHash(d);
     pushHash(d);
+    saveRecent(d, hash);
     window.scrollTo(0, 0);
   }, []);
 
