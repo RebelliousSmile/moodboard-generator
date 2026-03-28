@@ -23,35 +23,35 @@
 
 .logo {
   display: flex;
-  align-items: baseline;
-  gap: 0;
+  align-items: flex-end;
+  gap: 8px;
   user-select: none;
 }
 
-.logo-mood {
+.logo-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
   font-family: 'IM Fell English', serif;
   font-style: italic;
-  font-weight: 400;
-  letter-spacing: .02em;
+  font-size: 19px;
   color: var(--ink);
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-.logo-board {
+.logo-text {
   font-family: 'Space Mono', monospace;
+  font-size: 9px;
   font-weight: 400;
-  font-size: .72em;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  letter-spacing: .1em;
+  text-transform: lowercase;
   color: var(--muted);
-  margin-left: 1px;
-}
-
-.logo-dot {
-  font-family: 'IM Fell English', serif;
-  color: var(--tag);
-  font-size: 1.4em;
-  line-height: 0;
-  margin-left: 1px;
+  padding-bottom: 2px;
 }
 
 .editor-header p {

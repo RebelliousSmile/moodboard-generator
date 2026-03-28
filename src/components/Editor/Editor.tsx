@@ -148,7 +148,8 @@ export function Editor({ onGenerate }: EditorProps) {
     <div className="editor">
       <header className="editor-header">
         <h1 className="logo">
-          <span className="logo-mood">mood</span><span className="logo-board">board</span><span className="logo-dot">.</span>
+          <span className="logo-monogram">M</span>
+          <span className="logo-text">moodboard</span>
         </h1>
         <p>JSON · YAML</p>
       </header>
