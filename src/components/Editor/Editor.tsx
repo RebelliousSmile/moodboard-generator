@@ -13,12 +13,16 @@ export function Editor({ onGenerate }: EditorProps) {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [skillOpen, setSkillOpen] = useState(false);
+  const [sujet, setSujet] = useState('');
+  const [contexte, setContexte] = useState('');
+  const [themes, setThemes] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleGenerate = useCallback(() => {
     const raw = value.trim();
     if (!raw) {
-      setError('Le champ JSON est vide.');
+      setError('Le champ est vide.');
       return;
     }
     try {
@@ -60,11 +64,16 @@ export function Editor({ onGenerate }: EditorProps) {
     if (file) handleFile(file);
   }, [handleFile]);
 
+  const handleDownloadSkill = useCallback(() => {
+    if (!sujet.trim()) return;
+    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes: themes.trim() });
+  }, [sujet, contexte, themes]);
+
   return (
     <div className="editor">
       <div className="editor-header">
         <h1>Moodboard Generator</h1>
-        <p>Scénario JDR · Format JSON</p>
+        <p>JSON · YAML</p>
       </div>
 
       <div
@@ -79,7 +88,7 @@ export function Editor({ onGenerate }: EditorProps) {
           spellCheck={false}
           placeholder='Collez votre JSON ou YAML ici, ou glissez un fichier .json / .yaml...'
         />
-        {dragOver && <div className="drop-overlay">Déposez le fichier .json</div>}
+        {dragOver && <div className="drop-overlay">Déposez le fichier</div>}
       </div>
 
       {error && <div className="error-msg">{error}</div>}
@@ -98,19 +107,73 @@ export function Editor({ onGenerate }: EditorProps) {
       </div>
 
       <div className="hint">
-        Structure JSON attendue :<br />
-        <code>"scenario"</code> : Titre &nbsp;·&nbsp;
-        <code>"contexte"</code> : Ligne courte &nbsp;·&nbsp;
-        <code>"images"</code> (ou <code>images:</code> en YAML) : liste avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
+        <code>"scenario"</code> ou <code>scenario:</code> &nbsp;·&nbsp;
+        <code>"contexte"</code> &nbsp;·&nbsp;
+        <code>"images"</code> avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
       </div>
 
-      <div className="skill-row">
-        <button className="skill-btn" onClick={downloadSkill}>
-          ↓ Télécharger le skill IA
+      {/* ── Skill IA ── */}
+      <div className="skill-section">
+        <button
+          className="skill-toggle"
+          onClick={() => setSkillOpen(o => !o)}
+        >
+          {skillOpen ? '✕' : '↓'} Skill IA — générer le fichier de référence
         </button>
-        <span className="skill-hint">
-          Skill Claude Code pour générer le fichier de référence via l'IA
-        </span>
+
+        {skillOpen && (
+          <div className="skill-form">
+            <p className="skill-form-desc">
+              Génère un fichier d'instructions pour demander à votre IA de créer le fichier de données du moodboard. Compatible Claude Code, Cursor, Copilot, ChatGPT, Gemini.
+            </p>
+
+            <label className="skill-label">
+              Sujet du moodboard <span className="required">*</span>
+              <input
+                type="text"
+                value={sujet}
+                onChange={e => setSujet(e.target.value)}
+                placeholder="ex : voyage au Japon, scénario JDR Nagasaki, architecture brutaliste..."
+                className="skill-input"
+              />
+            </label>
+
+            <label className="skill-label">
+              Contexte <span className="optional">(optionnel)</span>
+              <input
+                type="text"
+                value={contexte}
+                onChange={e => setContexte(e.target.value)}
+                placeholder="ex : Demon Thrills · Contemporain · Îles Goto"
+                className="skill-input"
+              />
+            </label>
+
+            <label className="skill-label">
+              Thèmes visuels à couvrir <span className="optional">(optionnel — un par ligne)</span>
+              <textarea
+                value={themes}
+                onChange={e => setThemes(e.target.value)}
+                placeholder={"lieu principal\nambiance climatique\nmoment clé\n..."}
+                className="skill-themes"
+                rows={5}
+              />
+            </label>
+
+            <div className="skill-form-actions">
+              <button
+                className="primary"
+                onClick={handleDownloadSkill}
+                disabled={!sujet.trim()}
+              >
+                ↓ Télécharger la skill
+              </button>
+              {!sujet.trim() && (
+                <span className="skill-form-hint">Le sujet est requis</span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

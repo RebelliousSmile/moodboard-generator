@@ -127,3 +127,114 @@
   letter-spacing: .04em;
   line-height: 1.6;
 }
+
+/* ── Skill configurator ── */
+
+.skill-section {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: .5px solid var(--rule);
+}
+
+.skill-toggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-toggle:hover {
+  color: var(--text);
+}
+
+.skill-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skill-form-desc {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  border-left: 1.5px solid var(--rule);
+  padding-left: 14px;
+  margin: 0;
+}
+
+.skill-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+
+.required {
+  color: #C86060;
+}
+
+.optional {
+  color: var(--muted);
+  opacity: .6;
+}
+
+.skill-input {
+  width: 100%;
+  background: #14120E;
+  color: #C8C0A8;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  border: .5px solid #3A3428;
+  border-radius: 4px;
+  padding: 10px 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.skill-input:focus {
+  border-color: #6A6050;
+}
+
+.skill-themes {
+  width: 100%;
+  background: #14120E;
+  color: #C8C0A8;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  border: .5px solid #3A3428;
+  border-radius: 4px;
+  padding: 10px 14px;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.skill-themes:focus {
+  border-color: #6A6050;
+}
+
+.skill-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.skill-form-hint {
+  font-size: 9px;
+  color: var(--muted);
+  opacity: .7;
+  font-family: 'Space Mono', monospace;
+}

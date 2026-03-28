@@ -1,29 +1,49 @@
-export const SKILL_CONTENT = `---
-name: moodboard-scenario
-description: Génère un fichier YAML de données pour alimenter l'application moodboard-generator. Recherche des images réelles via image_search et Claude in Chrome, extrait les vraies URLs src depuis le DOM, et produit un fichier YAML structuré prêt à coller dans l'application. À utiliser quand l'auteur a besoin d'inspiration visuelle pour un scénario de jeu de rôle.
+export interface SkillOptions {
+  sujet: string;
+  contexte: string;
+  themes: string;
+}
+
+export function generateSkillContent({ sujet, contexte, themes }: SkillOptions): string {
+  const themesBlock = themes.trim()
+    ? themes.trim().split('\n').filter(Boolean).map(t => `- ${t.replace(/^-\s*/, '')}`).join('\n')
+    : `- Lieu principal ou emblématique
+- Ambiance générale (lumière, saison, atmosphère)
+- Détail ou texture caractéristique
+- Moment ou activité liée au sujet
+- Contraste ou tension visuelle
+- Élément humain ou d'échelle`;
+
+  return `---
+name: moodboard-generator
+description: >
+  Génère un fichier YAML de données pour alimenter l'application moodboard-generator.
+  Sujet : ${sujet}. Recherche des images réelles, extrait les vraies URLs depuis le DOM
+  ou via web search, et produit un fichier YAML structuré prêt à coller dans l'application.
 ---
 
-# Moodboard scénario — instructions
+# Moodboard — ${sujet}
+
+## Contexte
+
+${contexte || `Créer un moodboard visuel sur le sujet : **${sujet}**.`}
 
 ## Objectif
 
-Produire un fichier YAML de données qui alimentera l'application moodboard-generator. Ce skill ne génère pas de HTML — il génère uniquement le fichier de données. L'application se charge de l'affichage.
+Produire un fichier YAML prêt à coller dans l'application moodboard-generator.
+Ce fichier contient uniquement les données (URLs, lieux, dates, tags) — l'application se charge de l'affichage.
 
-## Pourquoi YAML et pas JSON
-
-YAML est préféré à JSON pour l'édition humaine : pas de guillemets obligatoires sur les clés, pas de virgules de fin de ligne, pas d'accolades imbriquées, les listes s'écrivent avec de simples tirets. Moins d'erreurs de syntaxe lors d'une édition manuelle ou assistée par IA.
-
-## Format YAML produit
+## Format de sortie
 
 \`\`\`yaml
-scenario: Titre du scénario
-contexte: Système · Genre · Lieu · Époque
+scenario: ${sujet}
+contexte: ${contexte || sujet}
 
 images:
 
   - url: https://domaine.com/chemin/image.jpg
-    lieu: Lieu précis, région, pays
-    date: "2020"
+    lieu: Lieu précis
+    date: "2024"
     taille: full
     tags:
       - hashtag-un
@@ -39,102 +59,94 @@ images:
       - hashtag-b
 \`\`\`
 
-### Champs obligatoires par image
+### Champs par image
 
-- **url** : URL directe de l'image, extraite depuis le DOM — jamais devinée ou inventée
-- **lieu** : lieu précis (ville, île, bâtiment) — pas juste le pays
-- **date** : année si connue, décennie (\`années 1950\`), \`aujourd'hui\`, ou \`lieu et date inconnus\`
-- **taille** : \`full\` (pleine largeur, fort impact), \`tall\` (pleine largeur secondaire), \`half\` (demi-largeur), \`third\` (demi-largeur faible)
-- **tags** : entre 4 et 6 hashtags de lecture scénaristique, en liste YAML
+- **url** : URL directe extraite depuis le DOM ou la page — jamais inventée
+- **lieu** : lieu précis (ville, bâtiment, quartier) — pas juste le pays
+- **date** : année, décennie, \`aujourd'hui\`, ou \`inconnu\`
+- **taille** : \`full\` (grande impact), \`tall\` (secondaire pleine largeur), \`half\` (paire), \`third\` (petit)
+- **tags** : 4 à 6 hashtags descriptifs, sans accents, reliés par des tirets
 
-### Champs absents intentionnellement
+## Workflow
 
-- **position** : calculée automatiquement par l'application selon l'URL et les tags — ne pas l'inclure
-- **source** : l'URL suffit pour retrouver l'origine — ne pas l'inclure
+### Étape 1 — Thèmes visuels à couvrir
 
-## Workflow de collecte
+${themesBlock}
 
-### Étape 1 — Identifier les thèmes visuels
+Viser 8 à 12 images au total, en couvrant chaque thème.
 
-Définir entre 6 et 10 familles thématiques. Pour tout scénario JDR couvrir au minimum :
-lieu principal · ambiance climatique · lieu d'arrivée des PJ · lieu de tension maximale · trace de l'antagoniste · ancrage historique · lieu de résolution
+### Étape 2 — Trouver les images
 
-### Étape 2 — Trouver les sources via image_search
+Utiliser la recherche d'images disponible *(via \`image_search\` sur Claude Code, ou web search sur les autres LLMs)*.
 
-Pour chaque famille, lancer une recherche \`image_search\` ciblée sur des photographies réelles. Retenir les sites dont les images sont directement accessibles.
-
-**Sources fiables** :
-- \`voyapon.s3.amazonaws.com\` — photographies Japon, pas de restriction CORS
-- \`nagasaki-tabinet.com\` — tourisme officiel Nagasaki
-- \`kanpai.fr\`, \`ichiban-japan.com\` — blogs voyage Japon
-- \`upload.wikimedia.org\` — domaine public, toujours accessible
-- \`res.cloudinary.com/jnto\` — JNTO office tourisme japonais
+**Sources fiables (pas de watermark, pas de restriction CORS)** :
+- \`upload.wikimedia.org\` — domaine public
 - \`encirclephotos.com\` — photographies monde entier
+- \`unsplash.com\` — libre de droits
+- Blogs et sites de voyage (souvent accessibles)
+- Sites officiels de tourisme
 
-**Sources à éviter** : Getty Images, Alamy, Shutterstock (watermarks et blocages)
+**Éviter** : Getty Images, Alamy, Shutterstock (watermarks)
 
-### Étape 3 — Extraire les vraies URLs via Claude in Chrome
+### Étape 3 — Extraire les URLs
 
-Ne jamais deviner ou construire une URL. Toujours l'extraire depuis le DOM.
-
-1. Naviguer vers la page avec \`navigate\`
-2. Extraire les URLs avec ce script :
+**Sur Claude Code** — naviguer vers la page et extraire via ce script :
 
 \`\`\`javascript
 Array.from(document.querySelectorAll('img[src], img[data-src], img[data-lazy-src]'))
   .map(i => i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || i.src)
   .filter(s => s && s.match(/\\.(jpg|jpeg|png|webp)/i)
     && !s.includes('logo') && !s.includes('icon')
-    && !s.includes('avatar') && !s.includes('150x') && !s.includes('300x'))
+    && !s.includes('150x') && !s.includes('300x'))
   .slice(0, 20)
 \`\`\`
 
-3. Si peu d'images (lazy loading), utiliser \`read_network_requests\` avec \`urlPattern: ".jpg"\` après rechargement.
-4. Préférer les URLs avec \`-1024x\`, \`-1280x\` ou sans suffixe de taille.
+**Sur les autres LLMs** — noter l'URL de l'image telle qu'elle apparaît dans la page visitée, ou demander à l'utilisateur de fournir les URLs des images qu'il a sélectionnées.
 
-### Étape 4 — Choisir la taille
+### Étape 4 — Choisir les tailles
 
-- **full** : image la plus forte, sujet clair, grande lisibilité — ouverture et fermeture de planche
-- **tall** : image forte secondaire, pleine largeur mais moins haute
-- **half** : image de bonne qualité, groupée en paires
+- **full** : image la plus forte, ouverture ou fermeture de la planche
+- **tall** : image forte secondaire, pleine largeur
+- **half** : images de bonne qualité, groupées en paires
 - **third** : image faible ou résolution limitée
 
-Ne jamais enchaîner plus de deux \`full\` ou \`tall\` consécutifs.
+Ne pas enchaîner plus de deux \`full\` ou \`tall\` consécutifs.
 
-## Règles des hashtags
+## Règles des tags
 
-Format : mots courts sans accents, reliés par des tirets, minuscules. Le \`#\` est ajouté par l'application — ne pas l'inclure dans le YAML.
+Format : mots courts sans accents, reliés par des tirets, minuscules.
+Le \`#\` est ajouté automatiquement par l'application.
 
-**Catégories** :
-- Sensoriel : \`silence-portuaire\` \`odeur-sel\` \`beton-froid\` \`humidite\`
-- Émotionnel : \`malaise\` \`fausse-securite\` \`melancolie\` \`isolement\`
-- Narratif : \`retour-coupe\` \`sans-issue\` \`normalite-brisee\` \`encercle\`
-- Détail visuel : \`cables-enchevetre\` \`portes-entrouvertes\` \`rouille\`
-- Thématique : \`mort-prematuree\` \`memoire-enfouie\` \`rituel\` \`disparus\`
+Privilegier des tags de **lecture** plutôt que de simple description :
+- Ce que l'image évoque (émotion, tension, atmosphère)
+- Ce qu'elle raconte sur le sujet
+- Un détail visuel marquant
 
-Jamais de hashtags génériques seuls (\`japon\`, \`nuit\`, \`mer\` sans qualificatif).
+Éviter les tags génériques sans qualificatif (\`japon\`, \`nuit\`, \`mer\` seuls).
 
-## Output final
+## Livrable
 
-Produire un bloc YAML valide dans un code block, prêt à copier-coller dans l'application :
+Produire un bloc YAML valide dans un code block, prêt à copier-coller :
 
 \`\`\`yaml
-scenario: ...
-contexte: ...
+scenario: ${sujet}
+contexte: ${contexte || sujet}
 images:
   - url: ...
     ...
 \`\`\`
 
-Suivi d'un bref rappel des thèmes non couverts si certaines familles n'ont pas pu être illustrées.
+Indiquer en fin de réponse les thèmes non couverts, si certains n'ont pas pu être illustrés.
 `;
+}
 
-export function downloadSkill() {
-  const blob = new Blob([SKILL_CONTENT], { type: 'text/markdown; charset=utf-8' });
+export function downloadSkill(options: SkillOptions) {
+  const content = generateSkillContent(options);
+  const blob = new Blob([content], { type: 'text/markdown; charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'moodboard-scenario.md';
+  a.download = 'moodboard-skill.md';
   a.click();
   URL.revokeObjectURL(url);
 }
