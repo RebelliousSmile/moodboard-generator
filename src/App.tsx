@@ -4,14 +4,17 @@ import { Board } from './components/Board/Board';
 import { SettingsPanel } from './components/Settings/SettingsPanel';
 import { ExportBar } from './components/ExportBar/ExportBar';
 import { useBoardSettings } from './hooks/useBoardSettings';
+import { decodeFromHash, pushHash, clearHash } from './utils/permalink';
 import type { MoodboardData } from './types';
 import './App.css';
 
 type View = 'editor' | 'board';
 
+const restored = decodeFromHash();
+
 export default function App() {
-  const [view, setView] = useState<View>('editor');
-  const [data, setData] = useState<MoodboardData | null>(null);
+  const [view, setView] = useState<View>(restored ? 'board' : 'editor');
+  const [data, setData] = useState<MoodboardData | null>(restored);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const { settings, update, reset } = useBoardSettings();
@@ -19,12 +22,14 @@ export default function App() {
   const handleGenerate = useCallback((d: MoodboardData) => {
     setData(d);
     setView('board');
+    pushHash(d);
     window.scrollTo(0, 0);
   }, []);
 
   const handleBack = useCallback(() => {
     setView('editor');
     setSettingsOpen(false);
+    clearHash();
   }, []);
 
   const toggleSettings = useCallback(() => {

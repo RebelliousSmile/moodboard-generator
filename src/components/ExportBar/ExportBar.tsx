@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { exportPdf, type PdfFormat } from '../../utils/exportPdf';
+import { copyPermalink } from '../../utils/permalink';
 import './ExportBar.css';
 
 interface ExportBarProps {
@@ -18,6 +19,7 @@ const FORMAT_PRINT_SIZE: Record<PdfFormat, string> = {
 export function ExportBar({ boardRef, filename, onBack, onToggleSettings }: ExportBarProps) {
   const [format, setFormat] = useState<PdfFormat>('a4-portrait');
   const [exporting, setExporting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleExport = async () => {
     if (!boardRef.current || exporting) return;
@@ -45,6 +47,14 @@ export function ExportBar({ boardRef, filename, onBack, onToggleSettings }: Expo
     window.print();
   };
 
+  const handleShare = async () => {
+    const ok = await copyPermalink();
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="export-bar">
       <div className="export-left">
@@ -52,6 +62,9 @@ export function ExportBar({ boardRef, filename, onBack, onToggleSettings }: Expo
         <button onClick={onToggleSettings}>⚙ Personnaliser</button>
       </div>
       <div className="export-right">
+        <button onClick={handleShare}>
+          {copied ? '✓ Lien copié' : '⧉ Partager'}
+        </button>
         <select
           value={format}
           onChange={e => setFormat(e.target.value as PdfFormat)}
