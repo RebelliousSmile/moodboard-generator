@@ -194,26 +194,6 @@ export function Editor({ onGenerate }: EditorProps) {
         <code>"images"</code> avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
       </div>
 
-      {/* ── Recents ── */}
-      {recents.length > 0 && (
-        <div className="recent-section">
-          <h2 className="recent-title">Moodboards recents</h2>
-          <ul className="recent-list">
-            {recents.map(r => (
-              <li key={r.hash} className="recent-item">
-                <button className="recent-link" onClick={() => handleRecentClick(r.hash)}>
-                  <span className="recent-scenario">{r.scenario}</span>
-                  {r.contexte && <span className="recent-contexte">{r.contexte}</span>}
-                  <span className="recent-meta">
-                    {r.imageCount} image{r.imageCount > 1 ? 's' : ''} · {formatDate(r.timestamp)}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {/* ── Skill IA ── */}
       <div className="skill-section">
         <button
@@ -332,23 +312,43 @@ export function Editor({ onGenerate }: EditorProps) {
         )}
       </div>
 
+      {/* ── Recents ── */}
+      {recents.length > 0 && (
+        <div className="recent-section">
+          <h2 className="recent-title">Moodboards récents</h2>
+          <ul className="recent-list">
+            {recents.map(r => (
+              <li key={r.hash} className="recent-item">
+                <button className="recent-link" onClick={() => handleRecentClick(r.hash)}>
+                  <span className="recent-scenario">{r.scenario}</span>
+                  {r.contexte && <span className="recent-contexte">{r.contexte}</span>}
+                  <span className="recent-meta">
+                    {r.imageCount} image{r.imageCount > 1 ? 's' : ''} · {formatDate(r.timestamp)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ── Presentation / SEO ── */}
       <section className="about-section">
         <h2>Qu'est-ce qu'un moodboard ?</h2>
         <p className="about-text">
-          Un moodboard est une planche d'images qui capture l'atmosphere d'un projet. On y rassemble des photos, des lieux, des textures, des ambiances — tout ce qui donne le ton et aide a se projeter. C'est un outil de travail pour tous ceux qui pensent en images : auteurs, voyageurs, decorateurs, illustrateurs, equipes creatives.
+          Un moodboard est une planche d'images qui capture l'atmosphère d'un projet. On y rassemble des photos, des lieux, des textures, des ambiances — tout ce qui donne le ton et aide à se projeter. C'est un outil de travail pour tous ceux qui pensent en images : auteurs, voyageurs, décorateurs, illustrateurs, équipes créatives.
         </p>
 
         {/* ── Visuels exemples (degrades CSS) ── */}
         <div className="about-preview">
           <div className="about-preview-card about-preview-wide about-mood-voyage">
             <div className="about-preview-ann">
-              <span className="about-preview-loc">Cote amalfitaine, Italie · ete 2024</span>
+              <span className="about-preview-loc">Côte amalfitaine, Italie · été 2024</span>
               <div className="about-preview-tags">
-                <span>lumiere-doree</span>
+                <span>lumière-dorée</span>
                 <span>falaises</span>
                 <span>mer-ouverte</span>
-                <span>depart</span>
+                <span>départ</span>
               </div>
             </div>
           </div>
@@ -378,30 +378,30 @@ export function Editor({ onGenerate }: EditorProps) {
         <div className="about-grid">
           <div className="about-card">
             <strong>Composer librement</strong>
-            <p>Assemblez vos images dans une grille qui s'adapte : choisissez entre 2, 3 ou 4 colonnes, et donnez a chaque image la place qu'elle merite — pleine largeur pour les images-cles, format compact pour les details.</p>
+            <p>Assemblez vos images dans une grille qui s'adapte : choisissez entre 2, 3 ou 4 colonnes, et donnez à chaque image la place qu'elle mérite — pleine largeur pour les images-clés, format compact pour les détails.</p>
           </div>
           <div className="about-card">
             <strong>Donner le ton</strong>
-            <p>Ajustez les couleurs, la luminosite, le contraste et la saturation. Chaque lieu, chaque date et chaque tag s'affiche en surimpression pour ancrer vos images dans leur contexte.</p>
+            <p>Ajustez les couleurs, la luminosité, le contraste et la saturation. Chaque lieu, chaque date et chaque tag s'affiche en surimpression pour ancrer vos images dans leur contexte.</p>
           </div>
           <div className="about-card">
             <strong>Exporter et imprimer</strong>
-            <p>Generez un PDF multi-pages en A4 ou A3, portrait ou paysage. Imprimez vos planches pour les afficher a votre table de jeu ou les integrer a un dossier.</p>
+            <p>Générez un PDF multi-pages en A4 ou A3, portrait ou paysage. Imprimez vos planches pour les afficher sur un mur ou les intégrer à un dossier.</p>
           </div>
           <div className="about-card">
             <strong>Partager en un lien</strong>
-            <p>Chaque moodboard genere un lien permanent. Envoyez-le a vos joueurs, co-auteurs ou collaborateurs — ils voient exactement ce que vous voyez, sans inscription.</p>
+            <p>Chaque moodboard génère un lien permanent. Envoyez-le à vos co-auteurs ou collaborateurs — ils voient exactement ce que vous voyez, sans inscription.</p>
           </div>
         </div>
 
         <h2>Pour qui ?</h2>
         <ul className="about-usecases">
-          <li><strong>Voyageurs</strong> — composez un carnet d'inspiration avant le depart ou un souvenir au retour</li>
-          <li><strong>Auteurs et autrices</strong> — gardez sous les yeux les lieux et les visages de votre recit</li>
-          <li><strong>Decorateurs et architectes</strong> — planches tendance pour vos projets d'amenagement</li>
-          <li><strong>Illustrateurs et graphistes</strong> — rassemblez vos references de couleurs, textures et compositions</li>
-          <li><strong>Equipes creatives</strong> — partagez une vision commune en un seul lien, sans outil complique</li>
-          <li><strong>Scenaristes</strong> — installez une ambiance visuelle pour vos recits ou vos parties</li>
+          <li><strong>Voyageurs</strong> — composez un carnet d'inspiration avant le départ ou un souvenir au retour</li>
+          <li><strong>Auteurs et autrices</strong> — gardez sous les yeux les lieux et les visages de votre récit</li>
+          <li><strong>Décorateurs et architectes</strong> — planches tendance pour vos projets d'aménagement</li>
+          <li><strong>Illustrateurs et graphistes</strong> — rassemblez vos références de couleurs, textures et compositions</li>
+          <li><strong>Équipes créatives</strong> — partagez une vision commune en un seul lien, sans outil compliqué</li>
+          <li><strong>Scénaristes</strong> — installez une ambiance visuelle pour vos récits ou vos parties</li>
         </ul>
       </section>
     </div>
