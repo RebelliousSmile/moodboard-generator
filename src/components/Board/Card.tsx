@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { detectPosition } from '../../utils/detectPosition';
+import { getCachedSrc, preloadImage } from '../../utils/imageCache';
 import type { ImageEntry } from '../../types';
 
 const FALLBACKS = [
@@ -15,16 +16,30 @@ interface CardProps {
 
 export function Card({ image, index }: CardProps) {
   const [imgError, setImgError] = useState(false);
+  const [src, setSrc] = useState(() => getCachedSrc(image.url) || '');
   const taille = image.taille || 'half';
   const pos = detectPosition(image.url, image.tags);
   const loc = [image.lieu, image.date].filter(Boolean).join(' · ');
   const fb = FALLBACKS[index % FALLBACKS.length];
 
+  useEffect(() => {
+    const cached = getCachedSrc(image.url);
+    if (cached) {
+      setSrc(cached);
+      return;
+    }
+    let cancelled = false;
+    preloadImage(image.url).then((resolved) => {
+      if (!cancelled) setSrc(resolved);
+    });
+    return () => { cancelled = true; };
+  }, [image.url]);
+
   return (
     <div className={`card ${taille}`} style={{ background: fb }}>
-      {!imgError && (
+      {!imgError && src && (
         <img
-          src={image.url}
+          src={src}
           alt={image.lieu || ''}
           style={{ objectPosition: pos }}
           onError={() => setImgError(true)}

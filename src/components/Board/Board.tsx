@@ -32,7 +32,7 @@ export const Board = forwardRef<HTMLDivElement, BoardProps>(({ data, settings },
 
       <div className="board">
         {data.images.map((img, i) => (
-          <Card key={`${img.url}-${i}`} image={img} index={i} />
+          <Card key={img.url} image={img} index={i} />
         ))}
       </div>
     </div>

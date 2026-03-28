@@ -30,11 +30,10 @@
   line-height: 1.8;
 }
 
-/* ── Grille — pilotée par CSS custom properties ── */
+/* ── Grille masonry — pilotée par CSS custom properties ── */
 .board {
-  display: grid;
-  grid-template-columns: repeat(var(--board-columns, 2), 1fr);
-  gap: var(--board-gap, 5px);
+  column-count: var(--board-columns, 2);
+  column-gap: var(--board-gap, 5px);
 }
 
 /* ── Cartes ── */
@@ -43,10 +42,12 @@
   overflow: hidden;
   background: var(--card-bg);
   border-radius: var(--card-radius, 0);
+  break-inside: avoid;
+  margin-bottom: var(--board-gap, 5px);
 }
 
-.card.full  { grid-column: 1 / -1; height: 420px; }
-.card.tall  { grid-column: 1 / -1; height: 340px; }
+.card.full  { column-span: all; height: 420px; }
+.card.tall  { column-span: all; height: 340px; }
 .card.half  { height: 270px; }
 .card.third { height: 195px; }
 

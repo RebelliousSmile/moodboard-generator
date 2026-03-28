@@ -24,7 +24,7 @@ button:disabled { opacity: .4; cursor: default; }
   body { background: var(--bg) !important; }
   .editor, .export-bar, .settings-panel, .sp-toggle { display: none !important; }
   .dl { display: none !important; }
-  .board { gap: 3px !important; }
+  .board { column-gap: 3px !important; }
   .card.full  { height: 360px !important; }
   .card.tall  { height: 290px !important; }
   .card.half  { height: 230px !important; }
