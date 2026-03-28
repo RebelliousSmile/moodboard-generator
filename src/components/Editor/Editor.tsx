@@ -10,10 +10,9 @@ interface EditorProps {
 }
 
 const AGENTS: { value: AgentType; label: string; desc: string }[] = [
-  { value: 'claude-code', label: 'Claude Code',                  desc: 'extraction DOM automatique' },
-  { value: 'claude-ia',   label: 'Claude IA (claude.ai)',         desc: 'recherche web intégrée' },
-  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot',  desc: 'recherche web + IDE' },
-  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',     desc: 'recherche web + URLs manuelles' },
+  { value: 'claude-ia',   label: 'Claude IA (claude.ai)',        desc: 'recherche web intégrée' },
+  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot', desc: 'recherche web + IDE' },
+  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',    desc: 'recherche web + URLs manuelles' },
 ];
 
 export function Editor({ onGenerate }: EditorProps) {
@@ -23,7 +22,7 @@ export function Editor({ onGenerate }: EditorProps) {
   const [skillOpen, setSkillOpen] = useState(false);
   const [sujet, setSujet] = useState('');
   const [contexte, setContexte] = useState('');
-  const [agent, setAgent] = useState<AgentType>('claude-code');
+  const [agent, setAgent] = useState<AgentType>('claude-ia');
   const [themes, setThemes] = useState<string[]>([...DEFAULT_THEMES]);
   const [customTheme, setCustomTheme] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);

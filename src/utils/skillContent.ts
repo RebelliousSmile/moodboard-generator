@@ -1,4 +1,4 @@
-export type AgentType = 'claude-code' | 'claude-ia' | 'cursor' | 'chatgpt';
+export type AgentType = 'claude-ia' | 'cursor' | 'chatgpt';
 
 export interface SkillOptions {
   sujet: string;
@@ -17,28 +17,12 @@ export const DEFAULT_THEMES = [
 ];
 
 const AGENT_LABELS: Record<AgentType, string> = {
-  'claude-code': 'Claude Code',
   'claude-ia': 'Claude IA (claude.ai)',
   'cursor': 'Cursor / Windsurf / Copilot',
   'chatgpt': 'ChatGPT / Gemini / Autre',
 };
 
 function getExtractSection(agent: AgentType): string {
-  if (agent === 'claude-code') {
-    return `Naviguer vers la page et extraire les URLs via ce script :
-
-\`\`\`javascript
-Array.from(document.querySelectorAll('img[src], img[data-src], img[data-lazy-src]'))
-  .map(i => i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || i.src)
-  .filter(s => s && s.match(/\\.(jpg|jpeg|png|webp)/i)
-    && !s.includes('logo') && !s.includes('icon')
-    && !s.includes('150x') && !s.includes('300x'))
-  .slice(0, 20)
-\`\`\`
-
-Utiliser \`image_search\` pour trouver les images, puis naviguer vers les pages sources pour extraire les URLs réelles depuis le DOM.`;
-  }
-
   if (agent === 'claude-ia') {
     return `Utiliser la recherche web (outil intégré) pour trouver des pages sources.
 Visiter chaque page et noter l'URL directe de l'image telle qu'elle apparaît dans le contenu.
