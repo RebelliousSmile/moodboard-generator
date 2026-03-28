@@ -536,16 +536,40 @@
   background: linear-gradient(145deg, #C4B494 0%, #A89878 30%, #8A7A60 60%, #D4C4A4 100%);
 }
 
-.about-preview-caption {
+.about-preview-ann {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(6,5,4,.8) 50%);
-  padding: 20px 12px 8px;
+  background: linear-gradient(transparent, rgba(6,5,4,.85) 38%);
+  padding: 28px 12px 10px;
+}
+
+.about-preview-loc {
+  display: block;
   font-family: 'IM Fell English', serif;
   font-style: italic;
   font-size: 9px;
   color: rgba(205,192,172,.65);
   letter-spacing: .02em;
+  margin-bottom: 5px;
+}
+
+.about-preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+}
+
+.about-preview-tags span {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  color: var(--tag);
+  letter-spacing: .04em;
+  line-height: 1.5;
+}
+
+.about-preview-tags span::before {
+  content: '#';
+  opacity: .5;
 }

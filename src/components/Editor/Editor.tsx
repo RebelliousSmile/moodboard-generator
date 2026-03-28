@@ -304,13 +304,35 @@ export function Editor({ onGenerate }: EditorProps) {
         {/* ── Visuels exemples (degrades CSS) ── */}
         <div className="about-preview">
           <div className="about-preview-card about-preview-wide about-mood-voyage">
-            <span className="about-preview-caption">Voyage · Cotes et lumiere</span>
+            <div className="about-preview-ann">
+              <span className="about-preview-loc">Cote amalfitaine, Italie · ete 2024</span>
+              <div className="about-preview-tags">
+                <span>lumiere-doree</span>
+                <span>falaises</span>
+                <span>mer-ouverte</span>
+                <span>depart</span>
+              </div>
+            </div>
           </div>
           <div className="about-preview-card about-mood-fiction">
-            <span className="about-preview-caption">Fiction · Ambiance sombre</span>
+            <div className="about-preview-ann">
+              <span className="about-preview-loc">Rue sans nom · nuit</span>
+              <div className="about-preview-tags">
+                <span>ombre</span>
+                <span>silence</span>
+                <span>tension</span>
+              </div>
+            </div>
           </div>
           <div className="about-preview-card about-mood-deco">
-            <span className="about-preview-caption">Decoration · Tons naturels</span>
+            <div className="about-preview-ann">
+              <span className="about-preview-loc">Atelier, Bordeaux · 2025</span>
+              <div className="about-preview-tags">
+                <span>lin</span>
+                <span>bois-brut</span>
+                <span>chaleur</span>
+              </div>
+            </div>
           </div>
         </div>
 
