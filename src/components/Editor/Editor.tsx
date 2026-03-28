@@ -175,7 +175,7 @@ export function Editor({ onGenerate }: EditorProps) {
                 type="text"
                 value={sujet}
                 onChange={e => setSujet(e.target.value)}
-                placeholder="ex : voyage au Japon, scénario JDR Nagasaki, architecture brutaliste..."
+                placeholder="ex : voyage au Japon, architecture brutaliste, polar noir années 50..."
                 className="skill-input"
               />
             </label>
@@ -187,7 +187,7 @@ export function Editor({ onGenerate }: EditorProps) {
                 type="text"
                 value={contexte}
                 onChange={e => setContexte(e.target.value)}
-                placeholder="ex : Demon Thrills · Contemporain · Îles Goto"
+                placeholder="ex : Contemporain · Europe du Nord · Ambiance hivernale"
                 className="skill-input"
               />
             </label>
