@@ -10,6 +10,7 @@ interface BoardProps {
 
 export const Board = forwardRef<HTMLDivElement, BoardProps>(({ data, settings }, ref) => {
   const wrapStyle = {
+    '--board-gap': `${settings.gap}px`,
     '--card-radius': `${settings.borderRadius}px`,
     '--img-brightness': settings.brightness,
     '--img-contrast': settings.contrast,

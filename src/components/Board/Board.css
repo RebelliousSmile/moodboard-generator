@@ -44,6 +44,8 @@
 
 .card.full  { column-span: all; height: 420px; }
 .card.tall  { column-span: all; height: 340px; }
+.card.full:not(:first-child),
+.card.tall:not(:first-child) { margin-top: var(--board-gap, 5px); }
 .card.half  { height: 270px; }
 .card.third { height: 195px; }
 

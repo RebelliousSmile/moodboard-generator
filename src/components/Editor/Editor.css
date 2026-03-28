@@ -14,10 +14,44 @@
 }
 
 .editor-header h1 {
-  font-family: 'IM Fell English', serif;
   font-size: 18px;
   font-weight: 400;
   letter-spacing: .04em;
+}
+
+/* ── Logo ── */
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  user-select: none;
+}
+
+.logo-mood {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: var(--ink);
+}
+
+.logo-board {
+  font-family: 'Space Mono', monospace;
+  font-weight: 400;
+  font-size: .72em;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-left: 1px;
+}
+
+.logo-dot {
+  font-family: 'IM Fell English', serif;
+  color: var(--tag);
+  font-size: 1.4em;
+  line-height: 0;
+  margin-left: 1px;
 }
 
 .editor-header p {
