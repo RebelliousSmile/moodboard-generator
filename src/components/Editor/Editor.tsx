@@ -137,7 +137,7 @@ export function Editor({ onGenerate }: EditorProps) {
       </header>
 
       <p className="editor-tagline">
-        Composez des planches visuelles pour vos scenarios JDR, recits de fiction, carnets de voyage ou projets creatifs — a partir d'un simple fichier JSON ou YAML.
+        Rassemblez vos images, donnez le ton, partagez l'ambiance.
       </p>
 
       <div
@@ -296,34 +296,55 @@ export function Editor({ onGenerate }: EditorProps) {
 
       {/* ── Presentation / SEO ── */}
       <section className="about-section">
-        <h2>Comment ca marche</h2>
-        <div className="about-grid">
-          <div className="about-card">
-            <strong>1. Preparez vos donnees</strong>
-            <p>Decrivez votre moodboard en JSON ou YAML : titre du scenario, images avec lieu, date et tags. Importez un fichier ou collez directement dans l'editeur.</p>
+        <h2>Qu'est-ce qu'un moodboard ?</h2>
+        <p className="about-text">
+          Un moodboard est une planche d'images qui capture l'atmosphere d'un projet. On y rassemble des photos, des lieux, des textures, des ambiances — tout ce qui donne le ton et aide a se projeter. C'est un outil de travail pour tous ceux qui pensent en images : auteurs, voyageurs, decorateurs, illustrateurs, equipes creatives.
+        </p>
+
+        {/* ── Visuels exemples ── */}
+        <div className="about-preview">
+          <div className="about-preview-card about-preview-wide">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Nagasaki_1945_-_Before_and_after_%28adjusted%29.jpg/1280px-Nagasaki_1945_-_Before_and_after_%28adjusted%29.jpg" alt="Exemple moodboard — Nagasaki" />
+            <span className="about-preview-caption">Scenario JDR · Nagasaki</span>
           </div>
-          <div className="about-card">
-            <strong>2. Generez avec l'IA</strong>
-            <p>Utilisez la Skill IA pour creer un fichier d'instructions. Claude, ChatGPT ou Cursor recherchent les images et produisent le fichier de donnees pour vous.</p>
+          <div className="about-preview-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Dozakichurch01s3200.jpg/1280px-Dozakichurch01s3200.jpg" alt="Exemple moodboard — Eglise Goto" />
+            <span className="about-preview-caption">Iles Goto · Eglise</span>
           </div>
-          <div className="about-card">
-            <strong>3. Visualisez et personnalisez</strong>
-            <p>Grille masonry a 2, 3 ou 4 colonnes. Ajustez les couleurs, filtres, espacement et taille des cartes. Le rendu s'adapte en temps reel.</p>
-          </div>
-          <div className="about-card">
-            <strong>4. Exportez et partagez</strong>
-            <p>Export PDF multi-pages en A4 ou A3, portrait ou paysage. Partagez un lien permanent — le moodboard se reconstruit directement depuis l'URL.</p>
+          <div className="about-preview-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Osezaki_lighthouse02s3200.jpg/1280px-Osezaki_lighthouse02s3200.jpg" alt="Exemple moodboard — Cap Osezaki" />
+            <span className="about-preview-caption">Cap Osezaki · Bout du monde</span>
           </div>
         </div>
 
-        <h2>A qui s'adresse cet outil</h2>
+        <h2>Ce que l'outil vous permet</h2>
+        <div className="about-grid">
+          <div className="about-card">
+            <strong>Composer librement</strong>
+            <p>Assemblez vos images dans une grille qui s'adapte : choisissez entre 2, 3 ou 4 colonnes, et donnez a chaque image la place qu'elle merite — pleine largeur pour les images-cles, format compact pour les details.</p>
+          </div>
+          <div className="about-card">
+            <strong>Donner le ton</strong>
+            <p>Ajustez les couleurs, la luminosite, le contraste et la saturation. Chaque lieu, chaque date et chaque tag s'affiche en surimpression pour ancrer vos images dans leur contexte.</p>
+          </div>
+          <div className="about-card">
+            <strong>Exporter et imprimer</strong>
+            <p>Generez un PDF multi-pages en A4 ou A3, portrait ou paysage. Imprimez vos planches pour les afficher a votre table de jeu ou les integrer a un dossier.</p>
+          </div>
+          <div className="about-card">
+            <strong>Partager en un lien</strong>
+            <p>Chaque moodboard genere un lien permanent. Envoyez-le a vos joueurs, co-auteurs ou collaborateurs — ils voient exactement ce que vous voyez, sans inscription.</p>
+          </div>
+        </div>
+
+        <h2>Pour qui ?</h2>
         <ul className="about-usecases">
-          <li><strong>Scenaristes JDR</strong> — planches d'ambiance pour vos campagnes et one-shots</li>
-          <li><strong>Auteurs et autrices</strong> — references visuelles pour vos univers de fiction</li>
-          <li><strong>Voyageurs</strong> — carnets d'inspiration avant ou apres un voyage</li>
-          <li><strong>Illustrateurs</strong> — collecte de references graphiques et chromatiques</li>
-          <li><strong>Decorateurs</strong> — planches tendance pour projets d'amenagement</li>
-          <li><strong>Equipes creatives</strong> — support visuel a partager en un lien</li>
+          <li><strong>Voyageurs</strong> — composez un carnet d'inspiration avant le depart ou un souvenir au retour</li>
+          <li><strong>Auteurs et autrices</strong> — gardez sous les yeux les lieux et les visages de votre recit</li>
+          <li><strong>Decorateurs et architectes</strong> — planches tendance pour vos projets d'amenagement</li>
+          <li><strong>Illustrateurs et graphistes</strong> — rassemblez vos references de couleurs, textures et compositions</li>
+          <li><strong>Equipes creatives</strong> — partagez une vision commune en un seul lien, sans outil complique</li>
+          <li><strong>Scenaristes</strong> — installez une ambiance visuelle pour vos recits ou vos parties</li>
         </ul>
       </section>
     </div>
