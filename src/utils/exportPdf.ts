@@ -22,7 +22,7 @@ export async function exportPdf(
   const canvas = await html2canvas(element, {
     scale: 2,
     useCORS: true,
-    allowTaint: true,
+    allowTaint: false,
     backgroundColor: null,
   });
 
