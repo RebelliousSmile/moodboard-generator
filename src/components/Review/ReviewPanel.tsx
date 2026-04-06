@@ -46,7 +46,7 @@ export function ReviewPanel({ data }: ReviewPanelProps) {
     data.images.forEach((img, i) => {
       const r = reviews[i];
       if (!r.checked) return;
-      const label = img.lieu || img.url;
+      const label = img.lieu || img.url || `Image ${i + 1}`;
       lines.push(`- Image ${i + 1} : ${label}`);
       if (img.tags?.length) lines.push(`  Tags : ${img.tags.join(', ')}`);
       if (r.comment) lines.push(`  Commentaire : ${r.comment}`);
@@ -97,18 +97,20 @@ export function ReviewPanel({ data }: ReviewPanelProps) {
 
       <div className="review-list">
         {data.images.map((img, i) => (
-          <div key={img.url} className={`review-item${reviews[i].checked ? ' selected' : ''}`}>
+          <div key={img.id ?? img.url ?? i} className={`review-item${reviews[i].checked ? ' selected' : ''}`}>
             <label className="review-check">
               <input
                 type="checkbox"
                 checked={reviews[i].checked}
                 onChange={() => toggle(i)}
               />
-              <img
-                src={getCachedImageUrl(img.url)}
-                alt={img.lieu || ''}
-                className="review-thumb"
-              />
+              {img.url && (
+                <img
+                  src={getCachedImageUrl(img.url)}
+                  alt={img.lieu || ''}
+                  className="review-thumb"
+                />
+              )}
               <span className="review-label">
                 <strong>{img.lieu || `Image ${i + 1}`}</strong>
                 {img.tags && <span className="review-tags">{img.tags.map(t => `#${t}`).join(' ')}</span>}

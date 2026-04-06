@@ -46,8 +46,22 @@
 .card.tall  { column-span: all; height: 340px; }
 .card.full:not(:first-child),
 .card.tall:not(:first-child) { margin-top: var(--board-gap, 5px); }
-.card.half  { height: 270px; }
-.card.third { height: 195px; }
+.card.half   { height: 270px; }
+.card.square { height: 270px; aspect-ratio: 1 / 1; }
+
+/* Pending: image pas encore résolue */
+.card.pending { opacity: .6; }
+.pending-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-family: monospace;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  z-index: 1;
+}
 
 .card img {
   display: block;

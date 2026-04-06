@@ -1,5 +1,5 @@
-export function detectPosition(url: string, tags?: string[]): string {
-  const u = url.toLowerCase();
+export function detectPosition(url: string | undefined, tags?: string[]): string {
+  const u = (url || '').toLowerCase();
   const t = (tags || []).join(' ').toLowerCase();
 
   if (
