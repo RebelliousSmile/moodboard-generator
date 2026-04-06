@@ -15,7 +15,8 @@ function formatDate(ts: number): string {
 }
 
 interface EditorProps {
-  onGenerate: (data: MoodboardData) => void;
+  onGenerate: (data: MoodboardData, raw: string) => void;
+  initialValue?: string;
 }
 
 const USAGES: { value: string; label: string; sujet: string; contexte: string }[] = [
@@ -63,8 +64,8 @@ const AGENTS: { value: AgentType; label: string; desc: string }[] = [
   { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',    desc: 'recherche web + URLs manuelles' },
 ];
 
-export function Editor({ onGenerate }: EditorProps) {
-  const [value, setValue] = useState('');
+export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
+  const [value, setValue] = useState(initialValue);
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [skillOpen, setSkillOpen] = useState(false);
@@ -86,7 +87,7 @@ export function Editor({ onGenerate }: EditorProps) {
     try {
       const data = parseInput(raw);
       setError('');
-      onGenerate(data);
+      onGenerate(data, raw);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -141,7 +142,7 @@ export function Editor({ onGenerate }: EditorProps) {
 
   const handleRecentClick = useCallback((hash: string) => {
     const data = decodeRawHash(hash);
-    if (data) onGenerate(data);
+    if (data) onGenerate(data, JSON.stringify(data, null, 2));
   }, [onGenerate]);
 
   return (

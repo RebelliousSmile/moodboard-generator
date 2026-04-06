@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { detectPosition } from '../../utils/detectPosition';
+import { getCachedImageUrl } from '../../utils/imageCache';
 import type { ImageEntry } from '../../types';
 
 const FALLBACKS = [
@@ -20,12 +21,13 @@ export function Card({ image, index, gapStyle }: CardProps) {
   const pos = detectPosition(image.url, image.tags);
   const loc = [image.lieu, image.date].filter(Boolean).join(' · ');
   const fb = FALLBACKS[index % FALLBACKS.length];
+  const cachedUrl = getCachedImageUrl(image.url);
 
   return (
     <div className={`card ${taille}`} style={{ background: fb, ...gapStyle }}>
       {!imgError && (
         <img
-          src={image.url}
+          src={cachedUrl}
           alt={image.lieu || ''}
           style={{ objectPosition: pos }}
           onError={() => setImgError(true)}
@@ -34,7 +36,7 @@ export function Card({ image, index, gapStyle }: CardProps) {
 
       <a
         className="dl"
-        href={image.url}
+        href={cachedUrl}
         target="_blank"
         rel="noopener noreferrer"
         title="Ouvrir l'image"

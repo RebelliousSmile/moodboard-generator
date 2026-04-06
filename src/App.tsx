@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Editor } from './components/Editor/Editor';
 import { Board } from './components/Board/Board';
+import { ReviewPanel } from './components/Review/ReviewPanel';
 import { SettingsPanel } from './components/Settings/SettingsPanel';
 import { ExportBar } from './components/ExportBar/ExportBar';
 import { useBoardSettings } from './hooks/useBoardSettings';
@@ -16,12 +17,14 @@ const restored = decodeFromHash();
 export default function App() {
   const [view, setView] = useState<View>(restored ? 'board' : 'editor');
   const [data, setData] = useState<MoodboardData | null>(restored);
+  const [rawInput, setRawInput] = useState(restored ? JSON.stringify(restored, null, 2) : '');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const { settings, update, reset } = useBoardSettings();
 
-  const handleGenerate = useCallback((d: MoodboardData) => {
+  const handleGenerate = useCallback((d: MoodboardData, raw: string) => {
     setData(d);
+    setRawInput(raw);
     setView('board');
     const hash = encodeToHash(d);
     pushHash(d);
@@ -46,7 +49,7 @@ export default function App() {
   return (
     <>
       {view === 'editor' && (
-        <Editor onGenerate={handleGenerate} />
+        <Editor onGenerate={handleGenerate} initialValue={rawInput} />
       )}
 
       {view === 'board' && data && (
@@ -58,6 +61,7 @@ export default function App() {
             onToggleSettings={toggleSettings}
           />
           <Board ref={boardRef} data={data} settings={settings} />
+          <ReviewPanel data={data} />
           <SettingsPanel
             settings={settings}
             onUpdate={update}

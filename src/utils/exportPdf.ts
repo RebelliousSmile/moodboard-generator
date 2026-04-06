@@ -10,7 +10,7 @@ const FORMAT_DIMS: Record<PdfFormat, { w: number; h: number; orient: 'p' | 'l'; 
 };
 
 /**
- * Tente de fetcher chaque image en CORS et remplace le src par un blob: URL.
+ * Fetche chaque image en CORS et remplace le src par un blob: URL.
  * Les images dont le serveur refuse CORS sont masquées temporairement
  * (sinon elles "taintent" le canvas et toDataURL() echoue pour tout).
  * Retourne une fonction de restauration.
