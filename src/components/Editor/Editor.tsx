@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
-import { downloadSkill, DEFAULT_THEMES, type AgentType } from '../../utils/skillContent';
+import { downloadSkill, DEFAULT_THEMES, type AgentType, type UsageType } from '../../utils/skillContent';
 import { loadRecent } from '../../utils/recentBoards';
 import { decodeRawHash } from '../../utils/permalink';
 import type { MoodboardData } from '../../types';
@@ -19,7 +19,7 @@ interface EditorProps {
   initialValue?: string;
 }
 
-const USAGES: { value: string; label: string; sujet: string; contexte: string }[] = [
+const USAGES: { value: UsageType; label: string; sujet: string; contexte: string }[] = [
   {
     value: 'voyage',
     label: 'Voyage',
@@ -39,7 +39,7 @@ const USAGES: { value: string; label: string; sujet: string; contexte: string }[
     contexte: 'ex : Style graphique · Noir et blanc · Ombres fortes',
   },
   {
-    value: 'deco',
+    value: 'decoration',
     label: 'Décoration',
     sujet: 'ex : salon minimaliste, cuisine rustique...',
     contexte: 'ex : Palette terreuse · Matières naturelles · Lumière douce',
@@ -51,7 +51,7 @@ const USAGES: { value: string; label: string; sujet: string; contexte: string }[
     contexte: 'ex : Palette neutre · Oversized · Textures',
   },
   {
-    value: 'jdr',
+    value: 'jeu_de_role',
     label: 'Jeu de rôle',
     sujet: 'ex : scénario cyberpunk, campagne fantasy médiévale...',
     contexte: 'ex : Futuriste · Dystopie · Mégalopole asiatique',
@@ -59,9 +59,8 @@ const USAGES: { value: string; label: string; sujet: string; contexte: string }[
 ];
 
 const AGENTS: { value: AgentType; label: string; desc: string }[] = [
-  { value: 'claude-ia',   label: 'Claude IA (claude.ai)',        desc: 'recherche web intégrée' },
-  { value: 'cursor',      label: 'Cursor / Windsurf / Copilot', desc: 'recherche web + IDE' },
-  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',    desc: 'recherche web + URLs manuelles' },
+  { value: 'claude-ia',   label: 'Claude IA (claude.ai)',        desc: 'fetch HTML + extraction directe' },
+  { value: 'chatgpt',     label: 'ChatGPT / Gemini / Autre',    desc: 'source_page + query (pas de fetch)' },
 ];
 
 export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
@@ -69,11 +68,11 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [skillOpen, setSkillOpen] = useState(false);
-  const [usage, setUsage] = useState(USAGES[0].value);
+  const [usage, setUsage] = useState<UsageType>('voyage');
   const [sujet, setSujet] = useState('');
   const [contexte, setContexte] = useState('');
   const [agent, setAgent] = useState<AgentType>('claude-ia');
-  const [themes, setThemes] = useState<string[]>([...DEFAULT_THEMES]);
+  const [themes, setThemes] = useState<string[]>(() => DEFAULT_THEMES.map(t => t.id));
   const [customTheme, setCustomTheme] = useState('');
   const [recents] = useState(() => loadRecent());
   const fileRef = useRef<HTMLInputElement>(null);
@@ -123,27 +122,35 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
     if (file) handleFile(file);
   }, [handleFile]);
 
-  const toggleTheme = useCallback((theme: string) => {
+  const toggleTheme = useCallback((themeId: string) => {
     setThemes(prev =>
-      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+      prev.includes(themeId) ? prev.filter(t => t !== themeId) : [...prev, themeId]
     );
   }, []);
 
   const addCustomTheme = useCallback(() => {
-    const t = customTheme.trim();
+    const t = customTheme.trim().toLowerCase().replace(/\s+/g, '_');
     if (!t) return;
     if (!themes.includes(t)) setThemes(prev => [...prev, t]);
     setCustomTheme('');
   }, [customTheme, themes]);
 
   const handleDownloadSkill = useCallback(() => {
-    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent });
-  }, [sujet, contexte, themes, agent]);
+    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent, usage });
+  }, [sujet, contexte, themes, agent, usage]);
 
   const handleRecentClick = useCallback((hash: string) => {
     const data = decodeRawHash(hash);
     if (data) onGenerate(data, JSON.stringify(data, null, 2));
   }, [onGenerate]);
+
+  // All theme options: defaults + custom ones
+  const allThemes = [
+    ...DEFAULT_THEMES,
+    ...themes
+      .filter(id => !DEFAULT_THEMES.some(d => d.id === id))
+      .map(id => ({ id, label: id.replace(/_/g, ' ') })),
+  ];
 
   return (
     <div className="editor">
@@ -190,24 +197,27 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
       </div>
 
       <div className="hint">
-        <code>"scenario"</code> ou <code>scenario:</code> &nbsp;·&nbsp;
-        <code>"contexte"</code> &nbsp;·&nbsp;
-        <code>"images"</code> avec <code>url</code>, <code>lieu</code>, <code>date</code>, <code>taille</code> (full/tall/half/third), <code>tags</code>
+        <code>scenario:</code> &nbsp;·&nbsp;
+        <code>contexte:</code> &nbsp;·&nbsp;
+        <code>usage:</code> &nbsp;·&nbsp;
+        <code>ambiance:</code> &nbsp;·&nbsp;
+        <code>palette:</code> &nbsp;·&nbsp;
+        <code>images</code> avec <code>url</code> | <code>source_page</code> | <code>api</code>, <code>taille</code> (full/tall/half/square), <code>tags</code>, <code>exclure</code>
       </div>
 
-      {/* ── Skill IA ── */}
+      {/* -- Skill IA -- */}
       <div className="skill-section">
         <button
           className="skill-toggle"
           onClick={() => setSkillOpen(o => !o)}
         >
-          {skillOpen ? '✕' : '↓'} Skill IA — générer le fichier de référence
+          {skillOpen ? '✕' : '↓'} Skill IA — générer le prompt système
         </button>
 
         {skillOpen && (
           <div className="skill-form">
             <p className="skill-form-desc">
-              Génère un fichier d'instructions pour demander à votre IA de créer le fichier de données du moodboard.
+              Génère le prompt système pour demander à votre IA de constituer le descripteur YAML du moodboard.
             </p>
 
             {/* Agent */}
@@ -277,14 +287,14 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                 Thèmes visuels à couvrir <span className="optional">(décocher pour exclure)</span>
               </span>
               <div className="themes-list">
-                {[...DEFAULT_THEMES, ...themes.filter(t => !DEFAULT_THEMES.includes(t))].map(theme => (
-                  <label key={theme} className={`theme-option${themes.includes(theme) ? ' checked' : ''}`}>
+                {allThemes.map(theme => (
+                  <label key={theme.id} className={`theme-option${themes.includes(theme.id) ? ' checked' : ''}`}>
                     <input
                       type="checkbox"
-                      checked={themes.includes(theme)}
-                      onChange={() => toggleTheme(theme)}
+                      checked={themes.includes(theme.id)}
+                      onChange={() => toggleTheme(theme.id)}
                     />
-                    <span>{theme}</span>
+                    <span>{theme.label}</span>
                   </label>
                 ))}
               </div>
@@ -306,14 +316,14 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                 className="primary"
                 onClick={handleDownloadSkill}
               >
-                ↓ Télécharger la skill
+                ↓ Télécharger le prompt
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Recents ── */}
+      {/* -- Recents -- */}
       {recents.length > 0 && (
         <div className="recent-section">
           <h2 className="recent-title">Moodboards récents</h2>
@@ -333,14 +343,14 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
         </div>
       )}
 
-      {/* ── Presentation / SEO ── */}
+      {/* -- Presentation / SEO -- */}
       <section className="about-section">
         <h2>Qu'est-ce qu'un moodboard ?</h2>
         <p className="about-text">
           Un moodboard est une planche d'images qui capture l'atmosphère d'un projet. On y rassemble des photos, des lieux, des textures, des ambiances — tout ce qui donne le ton et aide à se projeter. C'est un outil de travail pour tous ceux qui pensent en images : auteurs, voyageurs, décorateurs, illustrateurs, équipes créatives.
         </p>
 
-        {/* ── Visuels exemples (degrades CSS) ── */}
+        {/* -- Visuels exemples (degrades CSS) -- */}
         <div className="about-preview">
           <div className="about-preview-card about-preview-wide about-mood-voyage">
             <div className="about-preview-ann">

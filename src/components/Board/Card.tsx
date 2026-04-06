@@ -21,11 +21,13 @@ export function Card({ image, index, gapStyle }: CardProps) {
   const pos = detectPosition(image.url, image.tags);
   const loc = [image.lieu, image.date].filter(Boolean).join(' · ');
   const fb = FALLBACKS[index % FALLBACKS.length];
-  const cachedUrl = getCachedImageUrl(image.url);
+  const hasUrl = image.url && typeof image.url === 'string';
+  const cachedUrl = hasUrl ? getCachedImageUrl(image.url!) : null;
+  const pending = !hasUrl;
 
   return (
-    <div className={`card ${taille}`} style={{ background: fb, ...gapStyle }}>
-      {!imgError && (
+    <div className={`card ${taille}${pending ? ' pending' : ''}`} style={{ background: fb, ...gapStyle }}>
+      {cachedUrl && !imgError && (
         <img
           src={cachedUrl}
           alt={image.lieu || ''}
@@ -34,15 +36,23 @@ export function Card({ image, index, gapStyle }: CardProps) {
         />
       )}
 
-      <a
-        className="dl"
-        href={cachedUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        title="Ouvrir l'image"
-      >
-        ↗
-      </a>
+      {pending && (
+        <div className="pending-label">
+          {image.api ? `api: ${image.api}` : image.source_page ? 'source_page' : '~'}
+        </div>
+      )}
+
+      {cachedUrl && (
+        <a
+          className="dl"
+          href={cachedUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Ouvrir l'image"
+        >
+          ↗
+        </a>
+      )}
 
       <div className="ann">
         {loc && <span className="loc">{loc}</span>}
