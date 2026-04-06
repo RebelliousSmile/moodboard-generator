@@ -1,8 +1,9 @@
 import * as yaml from 'js-yaml';
 import type { MoodboardData } from '../types';
 
+const VALID_TAILLES = ['full', 'tall', 'half', 'square'];
+
 export function parseInput(raw: string): MoodboardData {
-  // Détection automatique JSON ou YAML
   const trimmed = raw.trim();
   let data: unknown;
 
@@ -26,11 +27,22 @@ export function parseInput(raw: string): MoodboardData {
 
   for (let i = 0; i < d.images.length; i++) {
     const img = d.images[i];
-    if (!img.url || typeof img.url !== 'string') {
-      throw new Error(`Image ${i + 1} : le champ "url" est requis.`);
+
+    // Cascade: at least one resolution strategy must be present
+    const hasUrl = img.url && typeof img.url === 'string';
+    const hasSourcePage = img.source_page && typeof img.source_page === 'string';
+    const hasApi = img.api && typeof img.api === 'string';
+
+    if (!hasUrl && !hasSourcePage && !hasApi) {
+      throw new Error(
+        `Image ${i + 1} : au moins un champ de résolution est requis (url, source_page, ou api).`
+      );
     }
-    if (img.taille && !['full', 'tall', 'half', 'third'].includes(img.taille)) {
-      throw new Error(`Image ${i + 1} : taille "${img.taille}" invalide (full/tall/half/third).`);
+
+    if (img.taille && !VALID_TAILLES.includes(img.taille)) {
+      throw new Error(
+        `Image ${i + 1} : taille "${img.taille}" invalide (${VALID_TAILLES.join('/')}).`
+      );
     }
   }
 
