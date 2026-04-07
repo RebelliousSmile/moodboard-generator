@@ -267,29 +267,9 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
               )}
             </div>
 
-            {/* Rest of form — revealed after sources loaded */}
-            {sources !== null && (
+            {/* Sujet + Contexte — visible dès la sélection d'un usage */}
+            {usage !== null && (
               <>
-                {/* Agent */}
-                <div className="skill-field">
-                  <span className="skill-field-label">Agent IA</span>
-                  <div className="agent-list">
-                    {AGENTS.map(a => (
-                      <label key={a.value} className={`agent-option${agent === a.value ? ' selected' : ''}`}>
-                        <input
-                          type="radio"
-                          name="agent"
-                          value={a.value}
-                          checked={agent === a.value}
-                          onChange={() => setAgent(a.value)}
-                        />
-                        <span className="agent-name">{a.label}</span>
-                        <span className="agent-desc">{a.desc}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Sujet */}
                 <label className="skill-label">
                   Sujet du moodboard <span className="optional">(optionnel — laisser vide pour que l'IA le demande)</span>
@@ -313,6 +293,31 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                     className="skill-input"
                   />
                 </label>
+              </>
+            )}
+
+            {/* Rest of form — revealed after sources loaded */}
+            {sources !== null && (
+              <>
+                {/* Agent */}
+                <div className="skill-field">
+                  <span className="skill-field-label">Agent IA</span>
+                  <div className="agent-list">
+                    {AGENTS.map(a => (
+                      <label key={a.value} className={`agent-option${agent === a.value ? ' selected' : ''}`}>
+                        <input
+                          type="radio"
+                          name="agent"
+                          value={a.value}
+                          checked={agent === a.value}
+                          onChange={() => setAgent(a.value)}
+                        />
+                        <span className="agent-name">{a.label}</span>
+                        <span className="agent-desc">{a.desc}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Thèmes */}
                 <div className="skill-field">
