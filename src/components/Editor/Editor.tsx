@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
-import { downloadSkill, DEFAULT_THEMES, type AgentType, type UsageType } from '../../utils/skillContent';
+import { downloadSkill, generateSkillContent, DEFAULT_THEMES, type AgentType, type UsageType } from '../../utils/skillContent';
 import { fetchSources, type SourceEntry } from '../../utils/sourcesApi';
 import { loadRecent } from '../../utils/recentBoards';
 import { decodeRawHash } from '../../utils/permalink';
@@ -78,6 +78,7 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
   const [agent, setAgent] = useState<AgentType>('claude-ia');
   const [themes, setThemes] = useState<string[]>(() => DEFAULT_THEMES.map(t => t.id));
   const [customTheme, setCustomTheme] = useState('');
+  const [copied, setCopied] = useState(false);
   const [recents] = useState(() => loadRecent());
   const fileRef = useRef<HTMLInputElement>(null);
   const sourcesAbort = useRef<AbortController | null>(null);
@@ -162,8 +163,17 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
 
   const handleDownloadSkill = useCallback(() => {
     if (!usage) return;
-    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent, usage });
-  }, [sujet, contexte, themes, agent, usage]);
+    downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent, usage, sources: sources ?? [] });
+  }, [sujet, contexte, themes, agent, usage, sources]);
+
+  const handleCopySkill = useCallback(() => {
+    if (!usage) return;
+    const content = generateSkillContent({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent, usage, sources: sources ?? [] });
+    navigator.clipboard.writeText(content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [sujet, contexte, themes, agent, usage, sources]);
 
   const handleRecentClick = useCallback((hash: string) => {
     const data = decodeRawHash(hash);
@@ -352,6 +362,11 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                 <div className="skill-form-actions">
                   <button
                     className="primary"
+                    onClick={handleCopySkill}
+                  >
+                    {copied ? 'Copié !' : 'Copier le prompt'}
+                  </button>
+                  <button
                     onClick={handleDownloadSkill}
                   >
                     ↓ Télécharger le prompt
