@@ -78,6 +78,14 @@ export interface RecentEntry {
   imageCount: number;
 }
 
+export type ResolutionStrategy = 'resolved' | 'pending_scrape' | 'pending_api';
+
+export function getResolutionStrategy(entry: ImageEntry): ResolutionStrategy {
+  if (entry.url) return 'resolved';
+  if (entry.source_page) return 'pending_scrape';
+  return 'pending_api';
+}
+
 export const DEFAULT_SETTINGS: BoardSettings = {
   bgColor: '#EAE4DA',
   textColor: 'rgba(205,192,172,.68)',
