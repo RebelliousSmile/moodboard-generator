@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
+## [0.6.0] - 2026-04-07
+
+### Added
+
+- Loading overlay (pulse 0.8s) on resolved cards while image fetches from network (#13)
+- Derived URL state pattern for `imgLoaded` and `imgError` — both auto-reset when URL changes (#13)
+- Open link `↗` hidden until image fully loaded (#13)
+
 ## [0.5.0] - 2026-04-07
 
 ### Added
