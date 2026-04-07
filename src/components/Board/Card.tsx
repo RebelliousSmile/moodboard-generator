@@ -16,7 +16,8 @@ interface CardProps {
 }
 
 export function Card({ image, index, gapStyle }: CardProps) {
-  const [imgError, setImgError] = useState(false);
+  const [errorUrl, setErrorUrl] = useState<string | null>(null);
+  const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
   const taille = image.taille || 'half';
   const pos = detectPosition(image.url, image.tags);
   const loc = [image.lieu, image.date].filter(Boolean).join(' · ');
@@ -24,19 +25,23 @@ export function Card({ image, index, gapStyle }: CardProps) {
   const hasUrl = image.url && typeof image.url === 'string';
   const cachedUrl = hasUrl ? getCachedImageUrl(image.url!) : null;
   const strategy = getResolutionStrategy(image);
+  const imgLoaded = loadedUrl === cachedUrl && cachedUrl !== null;
+  const imgError = errorUrl === cachedUrl && cachedUrl !== null;
+  const isImgLoading = strategy === 'resolved' && cachedUrl !== null && !imgLoaded && !imgError;
 
   const pendingClass = strategy === 'pending_scrape' ? 'pending pending-scrape' : strategy === 'pending_api' ? 'pending pending-api' : '';
   const pendingTitle = strategy === 'pending_scrape' ? `En attente : ${image.source_page}` : strategy === 'pending_api' ? `En attente : api ${image.api}` : undefined;
   const pendingLabel = strategy === 'pending_scrape' ? (image.source_page || '~') : strategy === 'pending_api' ? `api: ${image.api}` : null;
 
   return (
-    <div className={`card ${taille}${pendingClass ? ` ${pendingClass}` : ''}${imgError ? ' img-error' : ''}`} style={{ background: fb, ...gapStyle }} title={pendingTitle}>
+    <div className={`card ${taille}${pendingClass ? ` ${pendingClass}` : ''}${imgError ? ' img-error' : ''}${isImgLoading ? ' img-loading' : ''}`} style={{ background: fb, ...gapStyle }} title={pendingTitle}>
       {cachedUrl && !imgError && (
         <img
           src={cachedUrl}
           alt={image.lieu || ''}
           style={{ objectPosition: pos }}
-          onError={() => setImgError(true)}
+          onLoad={() => setLoadedUrl(cachedUrl)}
+          onError={() => setErrorUrl(cachedUrl)}
         />
       )}
 
@@ -44,6 +49,12 @@ export function Card({ image, index, gapStyle }: CardProps) {
         <div className="overlay-label img-error-label">
           <span>Image non disponible</span>
           <span>Vérifier l'URL ou utiliser source_page</span>
+        </div>
+      )}
+
+      {isImgLoading && (
+        <div className="overlay-label img-loading-label">
+          <span aria-hidden="true">·</span>
         </div>
       )}
 
@@ -55,7 +66,7 @@ export function Card({ image, index, gapStyle }: CardProps) {
         </div>
       )}
 
-      {cachedUrl && (
+      {cachedUrl && imgLoaded && (
         <a
           className="dl"
           href={cachedUrl}
