@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
+## [0.4.0] - 2026-04-07
+
+### Added
+
+- Typed resolution strategy dispatch for pending images — `ResolutionStrategy` type and `getResolutionStrategy()` helper in `types.ts` (#11)
+- Visual distinction between `pending_scrape` (amber border) and `pending_api` (blue border) cards
+- `title` attribute on pending cards for accessibility
+
 ## [0.3.0] - 2026-04-07
 
 ### Added
