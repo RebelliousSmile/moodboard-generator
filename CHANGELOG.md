@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
+## [0.5.0] - 2026-04-07
+
+### Added
+
+- Enriched pending card visuals: pulse animation, tier badge (SCRAPE/API), and source label (#12)
+- Error state on resolved cards with broken URL: message "Image non disponible" + suggestion (#12)
+- Shared `.overlay-label` CSS class for centered card overlays
+
 ## [0.4.0] - 2026-04-07
 
 ### Added
