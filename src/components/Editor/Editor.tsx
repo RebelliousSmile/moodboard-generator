@@ -323,13 +323,8 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                     <button onClick={addCustomTheme} disabled={!customTheme.trim()} className="theme-add-btn">+</button>
                   </div>
                 </div>
-              </>
-            )}
 
-            {/* Rest of form — revealed after sources loaded */}
-            {sources !== null && (
-              <>
-                {/* Agent */}
+                {/* Agent — visible dès la sélection d'un usage */}
                 <div className="skill-field">
                   <span className="skill-field-label">Agent IA</span>
                   <div className="agent-list">
@@ -348,7 +343,12 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
                     ))}
                   </div>
                 </div>
+              </>
+            )}
 
+            {/* Download — revealed after sources loaded */}
+            {sources !== null && (
+              <>
                 <div className="skill-form-actions">
                   <button
                     className="primary"
