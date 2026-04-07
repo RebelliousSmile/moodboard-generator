@@ -27,3 +27,4 @@ dist-ssr
 .claude/
 CLAUDE.md
 aidd_docs/
+.aidd/
