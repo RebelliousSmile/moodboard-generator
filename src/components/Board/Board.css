@@ -51,6 +51,8 @@
 
 /* Pending: image pas encore résolue */
 .card.pending { opacity: .6; }
+.card.pending-scrape { border: 1px solid rgba(180, 140, 60, 0.5); }
+.card.pending-api { border: 1px solid rgba(60, 140, 180, 0.5); }
 .pending-label {
   position: absolute;
   top: 50%; left: 50%;

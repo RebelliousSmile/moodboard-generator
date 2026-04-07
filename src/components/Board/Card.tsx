@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { detectPosition } from '../../utils/detectPosition';
 import { getCachedImageUrl } from '../../utils/imageCache';
-import type { ImageEntry } from '../../types';
+import { type ImageEntry, getResolutionStrategy } from '../../types';
 
 const FALLBACKS = [
   '#2C2018', '#3A4830', '#3A2818', '#1A3020', '#2A3820',
@@ -23,10 +23,14 @@ export function Card({ image, index, gapStyle }: CardProps) {
   const fb = FALLBACKS[index % FALLBACKS.length];
   const hasUrl = image.url && typeof image.url === 'string';
   const cachedUrl = hasUrl ? getCachedImageUrl(image.url!) : null;
-  const pending = !hasUrl;
+  const strategy = getResolutionStrategy(image);
+
+  const pendingClass = strategy === 'pending_scrape' ? 'pending pending-scrape' : strategy === 'pending_api' ? 'pending pending-api' : '';
+  const pendingTitle = strategy === 'pending_scrape' ? `En attente : ${image.source_page}` : strategy === 'pending_api' ? `En attente : api ${image.api}` : undefined;
+  const pendingLabel = strategy === 'pending_scrape' ? (image.source_page || '~') : strategy === 'pending_api' ? `api: ${image.api}` : null;
 
   return (
-    <div className={`card ${taille}${pending ? ' pending' : ''}`} style={{ background: fb, ...gapStyle }}>
+    <div className={`card ${taille}${pendingClass ? ` ${pendingClass}` : ''}`} style={{ background: fb, ...gapStyle }} title={pendingTitle}>
       {cachedUrl && !imgError && (
         <img
           src={cachedUrl}
@@ -36,9 +40,9 @@ export function Card({ image, index, gapStyle }: CardProps) {
         />
       )}
 
-      {pending && (
+      {strategy !== 'resolved' && (
         <div className="pending-label">
-          {image.api ? `api: ${image.api}` : image.source_page ? 'source_page' : '~'}
+          {pendingLabel}
         </div>
       )}
 
