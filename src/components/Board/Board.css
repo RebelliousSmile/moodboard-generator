@@ -95,6 +95,14 @@
 .card.img-error { border: 1px solid rgba(180, 60, 60, 0.5); opacity: .6; }
 .img-error-label {}
 
+/* Loading: image resolved en cours de fetch réseau */
+.card.img-loading { opacity: .8; }
+.img-loading-label {}
+.img-loading-label span {
+  display: block;
+  animation: pending-pulse 0.8s ease-in-out infinite;
+}
+
 .card img {
   display: block;
   width: 100%;
