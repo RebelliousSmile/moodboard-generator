@@ -1,4 +1,5 @@
 import type { Usage } from '../types';
+import type { SourceEntry } from './sourcesApi';
 
 export type AgentType = 'claude-ia' | 'chatgpt';
 
@@ -15,6 +16,7 @@ export interface SkillOptions {
   themes: string[];
   agent: AgentType;
   usage: UsageType;
+  sources?: SourceEntry[];
 }
 
 export const DEFAULT_THEMES: ThemeOption[] = [
@@ -35,6 +37,34 @@ const USAGE_LABELS: Record<UsageType, string> = {
   jeu_de_role: 'JEU_DE_ROLE',
 };
 
+function formatSourcesBlock(sources?: SourceEntry[]): string {
+  if (!sources || sources.length === 0) {
+    return 'Aucune source apprise pour cet usage — utilise la stratégie de recherche ci-dessous.';
+  }
+
+  const trusted = sources.filter(s => s.echecs === 0);
+  const blacklisted = sources.filter(s => s.echecs > 0);
+
+  const lines: string[] = [];
+
+  if (trusted.length > 0) {
+    lines.push('Domaines fiables (commence par ceux-ci) :');
+    trusted.forEach((s, i) => {
+      lines.push(`  ${i + 1}. ${s.domain} (tier ${s.tier}, score ${s.score}, hotlink: ${s.hotlink_safe ? 'oui' : 'non'})`);
+    });
+  }
+
+  if (blacklisted.length > 0) {
+    if (lines.length > 0) lines.push('');
+    lines.push('Domaines à éviter :');
+    blacklisted.forEach(s => {
+      lines.push(`  - ${s.domain} — ${s.echecs} échec${s.echecs > 1 ? 's' : ''}`);
+    });
+  }
+
+  return lines.join('\n');
+}
+
 function getAgentStrategy(agent: AgentType): string {
   if (agent === 'claude-ia') {
     return `Si agent = claude_web :
@@ -53,7 +83,7 @@ function buildThemesBlock(themes: string[]): string {
   return themes.map(t => `# - ${t}`).join('\n');
 }
 
-export function generateSkillContent({ sujet, contexte, themes, agent, usage }: SkillOptions): string {
+export function generateSkillContent({ sujet, contexte, themes, agent, usage, sources }: SkillOptions): string {
   const hasSujet = sujet.trim().length > 0;
   const hasContexte = contexte.trim().length > 0;
 
@@ -84,10 +114,7 @@ ${themesBlock}
 
 ━━ SOURCES PRIORITAIRES (apprises) ━━
 
-{sources_apprises_par_usage}
-# Injecté dynamiquement par l'app depuis url_learning.yml
-# Ces domaines ont fonctionné pour cet usage — commence par eux.
-# Les domaines en echecs[] sont à éviter.
+${formatSourcesBlock(sources)}
 
 ━━ STRATÉGIE SELON L'AGENT ━━
 
