@@ -30,7 +30,7 @@ export function Card({ image, index, gapStyle }: CardProps) {
   const pendingLabel = strategy === 'pending_scrape' ? (image.source_page || '~') : strategy === 'pending_api' ? `api: ${image.api}` : null;
 
   return (
-    <div className={`card ${taille}${pendingClass ? ` ${pendingClass}` : ''}`} style={{ background: fb, ...gapStyle }} title={pendingTitle}>
+    <div className={`card ${taille}${pendingClass ? ` ${pendingClass}` : ''}${imgError ? ' img-error' : ''}`} style={{ background: fb, ...gapStyle }} title={pendingTitle}>
       {cachedUrl && !imgError && (
         <img
           src={cachedUrl}
@@ -40,8 +40,17 @@ export function Card({ image, index, gapStyle }: CardProps) {
         />
       )}
 
+      {imgError && (
+        <div className="overlay-label img-error-label">
+          <span>Image non disponible</span>
+          <span>Vérifier l'URL ou utiliser source_page</span>
+        </div>
+      )}
+
       {strategy !== 'resolved' && (
-        <div className="pending-label">
+        <div className="overlay-label pending-label">
+          <span className="pending-icon" aria-hidden="true">⏳</span>
+          <span className="pending-tier">{strategy === 'pending_scrape' ? 'SCRAPE' : 'API'}</span>
           {pendingLabel}
         </div>
       )}
