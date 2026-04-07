@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
+## [0.3.0] - 2026-04-07
+
+### Added
+
+- Inject learned sources into skill prompt from ImgSrcRater API (#10)
+- One-click copy button for generated prompt with visual feedback
+
 ## [0.2.0] - 2026-04-07
 
 ### Added
