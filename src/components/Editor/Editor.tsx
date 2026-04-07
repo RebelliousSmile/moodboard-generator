@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { parseInput } from '../../utils/parseInput';
 import { EXAMPLE_DATA } from '../../utils/exampleData';
 import { downloadSkill, DEFAULT_THEMES, type AgentType, type UsageType } from '../../utils/skillContent';
+import { fetchSources, type SourceEntry } from '../../utils/sourcesApi';
 import { loadRecent } from '../../utils/recentBoards';
 import { decodeRawHash } from '../../utils/permalink';
 import type { MoodboardData } from '../../types';
@@ -68,7 +69,10 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [skillOpen, setSkillOpen] = useState(false);
-  const [usage, setUsage] = useState<UsageType>('voyage');
+  const [usage, setUsage] = useState<UsageType | null>(null);
+  const [sources, setSources] = useState<SourceEntry[] | null>(null);
+  const [sourcesLoading, setSourcesLoading] = useState(false);
+  const [sourcesError, setSourcesError] = useState<string | null>(null);
   const [sujet, setSujet] = useState('');
   const [contexte, setContexte] = useState('');
   const [agent, setAgent] = useState<AgentType>('claude-ia');
@@ -76,6 +80,7 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
   const [customTheme, setCustomTheme] = useState('');
   const [recents] = useState(() => loadRecent());
   const fileRef = useRef<HTMLInputElement>(null);
+  const sourcesAbort = useRef<AbortController | null>(null);
 
   const handleGenerate = useCallback(() => {
     const raw = value.trim();
@@ -122,6 +127,26 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
     if (file) handleFile(file);
   }, [handleFile]);
 
+  const handleUsageSelect = useCallback((u: UsageType) => {
+    sourcesAbort.current?.abort();
+    const ctrl = new AbortController();
+    sourcesAbort.current = ctrl;
+    setUsage(u);
+    setSources(null);
+    setSourcesError(null);
+    setSourcesLoading(true);
+    fetchSources(u, ctrl.signal)
+      .then(s => {
+        setSources(s);
+        setSourcesLoading(false);
+      })
+      .catch(e => {
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        setSourcesError((e as Error).message);
+        setSourcesLoading(false);
+      });
+  }, []);
+
   const toggleTheme = useCallback((themeId: string) => {
     setThemes(prev =>
       prev.includes(themeId) ? prev.filter(t => t !== themeId) : [...prev, themeId]
@@ -136,6 +161,7 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
   }, [customTheme, themes]);
 
   const handleDownloadSkill = useCallback(() => {
+    if (!usage) return;
     downloadSkill({ sujet: sujet.trim(), contexte: contexte.trim(), themes, agent, usage });
   }, [sujet, contexte, themes, agent, usage]);
 
@@ -220,105 +246,114 @@ export function Editor({ onGenerate, initialValue = '' }: EditorProps) {
               Génère le prompt système pour demander à votre IA de constituer le descripteur YAML du moodboard.
             </p>
 
-            {/* Agent */}
-            <div className="skill-field">
-              <span className="skill-field-label">Agent IA</span>
-              <div className="agent-list">
-                {AGENTS.map(a => (
-                  <label key={a.value} className={`agent-option${agent === a.value ? ' selected' : ''}`}>
-                    <input
-                      type="radio"
-                      name="agent"
-                      value={a.value}
-                      checked={agent === a.value}
-                      onChange={() => setAgent(a.value)}
-                    />
-                    <span className="agent-name">{a.label}</span>
-                    <span className="agent-desc">{a.desc}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Usage */}
+            {/* Usage — step 1, always visible */}
             <div className="skill-field">
               <span className="skill-field-label">Usage</span>
               <div className="usage-pills">
                 {USAGES.map(u => (
                   <button
                     key={u.value}
-                    className={`usage-pill${usage === u.value ? ' selected' : ''}`}
-                    onClick={() => setUsage(u.value)}
+                    className={`usage-pill${usage === u.value ? ' selected' : ''}${sourcesLoading && usage === u.value ? ' loading' : ''}`}
+                    onClick={() => handleUsageSelect(u.value)}
                     type="button"
+                    disabled={sourcesLoading}
                   >
                     {u.label}
                   </button>
                 ))}
               </div>
+              {sourcesError && (
+                <div className="sources-error">{sourcesError}</div>
+              )}
             </div>
 
-            {/* Sujet */}
-            <label className="skill-label">
-              Sujet du moodboard <span className="optional">(optionnel — laisser vide pour que l'IA le demande)</span>
-              <input
-                type="text"
-                value={sujet}
-                onChange={e => setSujet(e.target.value)}
-                placeholder={USAGES.find(u => u.value === usage)?.sujet ?? ''}
-                className="skill-input"
-              />
-            </label>
+            {/* Rest of form — revealed after sources loaded */}
+            {sources !== null && (
+              <>
+                {/* Agent */}
+                <div className="skill-field">
+                  <span className="skill-field-label">Agent IA</span>
+                  <div className="agent-list">
+                    {AGENTS.map(a => (
+                      <label key={a.value} className={`agent-option${agent === a.value ? ' selected' : ''}`}>
+                        <input
+                          type="radio"
+                          name="agent"
+                          value={a.value}
+                          checked={agent === a.value}
+                          onChange={() => setAgent(a.value)}
+                        />
+                        <span className="agent-name">{a.label}</span>
+                        <span className="agent-desc">{a.desc}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Contexte */}
-            <label className="skill-label">
-              Contexte <span className="optional">(optionnel)</span>
-              <input
-                type="text"
-                value={contexte}
-                onChange={e => setContexte(e.target.value)}
-                placeholder={USAGES.find(u => u.value === usage)?.contexte ?? ''}
-                className="skill-input"
-              />
-            </label>
+                {/* Sujet */}
+                <label className="skill-label">
+                  Sujet du moodboard <span className="optional">(optionnel — laisser vide pour que l'IA le demande)</span>
+                  <input
+                    type="text"
+                    value={sujet}
+                    onChange={e => setSujet(e.target.value)}
+                    placeholder={USAGES.find(u => u.value === usage)?.sujet ?? ''}
+                    className="skill-input"
+                  />
+                </label>
 
-            {/* Thèmes */}
-            <div className="skill-field">
-              <span className="skill-field-label">
-                Thèmes visuels à couvrir <span className="optional">(décocher pour exclure)</span>
-              </span>
-              <div className="themes-list">
-                {allThemes.map(theme => (
-                  <label key={theme.id} className={`theme-option${themes.includes(theme.id) ? ' checked' : ''}`}>
+                {/* Contexte */}
+                <label className="skill-label">
+                  Contexte <span className="optional">(optionnel)</span>
+                  <input
+                    type="text"
+                    value={contexte}
+                    onChange={e => setContexte(e.target.value)}
+                    placeholder={USAGES.find(u => u.value === usage)?.contexte ?? ''}
+                    className="skill-input"
+                  />
+                </label>
+
+                {/* Thèmes */}
+                <div className="skill-field">
+                  <span className="skill-field-label">
+                    Thèmes visuels à couvrir <span className="optional">(décocher pour exclure)</span>
+                  </span>
+                  <div className="themes-list">
+                    {allThemes.map(theme => (
+                      <label key={theme.id} className={`theme-option${themes.includes(theme.id) ? ' checked' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={themes.includes(theme.id)}
+                          onChange={() => toggleTheme(theme.id)}
+                        />
+                        <span>{theme.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="theme-add">
                     <input
-                      type="checkbox"
-                      checked={themes.includes(theme.id)}
-                      onChange={() => toggleTheme(theme.id)}
+                      type="text"
+                      value={customTheme}
+                      onChange={e => setCustomTheme(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && addCustomTheme()}
+                      placeholder="Ajouter un thème..."
+                      className="skill-input theme-add-input"
                     />
-                    <span>{theme.label}</span>
-                  </label>
-                ))}
-              </div>
-              <div className="theme-add">
-                <input
-                  type="text"
-                  value={customTheme}
-                  onChange={e => setCustomTheme(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addCustomTheme()}
-                  placeholder="Ajouter un thème..."
-                  className="skill-input theme-add-input"
-                />
-                <button onClick={addCustomTheme} disabled={!customTheme.trim()} className="theme-add-btn">+</button>
-              </div>
-            </div>
+                    <button onClick={addCustomTheme} disabled={!customTheme.trim()} className="theme-add-btn">+</button>
+                  </div>
+                </div>
 
-            <div className="skill-form-actions">
-              <button
-                className="primary"
-                onClick={handleDownloadSkill}
-              >
-                ↓ Télécharger le prompt
-              </button>
-            </div>
+                <div className="skill-form-actions">
+                  <button
+                    className="primary"
+                    onClick={handleDownloadSkill}
+                  >
+                    ↓ Télécharger le prompt
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

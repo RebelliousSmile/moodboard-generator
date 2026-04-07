@@ -398,6 +398,28 @@
   color: #C8C0A8;
 }
 
+.usage-pill.loading {
+  opacity: .6;
+  cursor: wait;
+  animation: pill-pulse 1s ease-in-out infinite;
+}
+
+@keyframes pill-pulse {
+  0%, 100% { opacity: .6; }
+  50% { opacity: .3; }
+}
+
+.usage-pill:disabled {
+  cursor: not-allowed;
+}
+
+.sources-error {
+  font-size: 10px;
+  color: #B85050;
+  margin-top: 6px;
+  letter-spacing: .02em;
+}
+
 /* ── Agent selector ── */
 
 .agent-list {

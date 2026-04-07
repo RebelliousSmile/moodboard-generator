@@ -1,6 +1,8 @@
+import type { Usage } from '../types';
+
 export type AgentType = 'claude-ia' | 'chatgpt';
 
-export type UsageType = 'voyage' | 'fiction' | 'illustration' | 'decoration' | 'mode' | 'jeu_de_role';
+export type UsageType = Usage;
 
 export interface ThemeOption {
   id: string;
