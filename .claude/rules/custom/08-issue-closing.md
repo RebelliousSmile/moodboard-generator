@@ -20,5 +20,6 @@ description: Attach plan and review as comments before closing an issue
 
 ## After closing
 
-- Chain with `aidd:08:commit`
-- Chain with `custom:08:end_plan`
+- Chain with `aidd:08:commit` auto
+- Chain with `custom:08:end_plan` with defaults: parent branch `main`, `/learn` oui, delete branch local only
+- Chain with `custom:08:changelog`
