@@ -1,0 +1,35 @@
+/* Le document d'impression n'existe qu'à l'impression. */
+.print-root {
+    display: none;
+}
+
+@media print {
+    /* Tout le reste de la page disparaît, portails de dialogues compris. */
+    body > *:not([data-print-root]) {
+        display: none !important;
+    }
+
+    html,
+    body {
+        height: auto;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .print-root {
+        display: block;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-page {
+        overflow: hidden;
+        break-after: page;
+        break-inside: avoid;
+    }
+
+    .print-page:last-child {
+        break-after: auto;
+    }
+}

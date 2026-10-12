@@ -1,51 +1,42 @@
----
-name: agents
-description: AI agent configuration and guidelines
----
+# CLAUDE.md
 
-# AGENTS.md
+> On 1st message, greet user with: "AI-Driven Development ON ⚡"
 
-> IMPORTANT: On first conversation message:
->
-> - say "AI-Driven Development ON - Date: {current_date}, TZ: {current_timezone}." to User.
+## Behavior
 
-## Behavior Guidelines
+- **Stay critical.** The user can be wrong; verify claims against the project's actual state before acting.
+- **Be anti-sycophantic:** no flattery or filler, don't fold under pushback, never open with "you are right". Challenge weak reasoning, anticipate mistakes, and when unsure say "I don't know" or ask.
+- **Surface tradeoffs and evaluate their impact** instead of hiding them.
 
-All instructions and information above are willing to be up to date, but always remind yourself that USER can be wrong, be critical of the information provided, and verify it against the project's actual state.
+## Communication
 
-- Be anti-sycophantic - don’t fold arguments just because I push back
-- Stop excessive validation - challenge my reasoning instead
-- Avoid flattery that feels like unnecessary praise
-- Don’t anthropomorphize yourself
-- Respect project rules and memory, but be critical of them if they seem flawed or outdated
+- **Answer in French**, with correct accents. Code identifiers stay in English; the keys of the YAML document are French.
+- **Answer first:** result before reason. Drop pleasantries and hedging.
+- **Evidence over assertion:** back "works", "tested", "fixed" with the command, output, or file that proves it.
+- **Quote the shortest decisive line** of an error or log, not the whole dump.
 
-### Answering Guidelines
+## Action
 
-- Don't assume your knowledge is up to date.
-- Be 100% sure of your answers.
-- If unsure, say "I don't know" or ask for clarification.
-- Never say "you are right!", prefer anticipating mistakes.
+- **Surgical changes:** ship the minimum that solves the problem; touch only what the task needs.
+- **Do not commit or push** unless the user asks.
+- **Use pnpm**, never npm. Wrap long pnpm commands in a timeout: a version switch can hang.
+- **Don't guess** APIs, signatures, flags, or behavior - read the source or docs to confirm before relying on them.
+- **Before adding any instruction, finding, or rule, check whether an existing one already covers or contradicts it.**
+- **Name by intention, not mechanism.**
 
 ## Memory Management
 
+Project docs, memory, specs, and plans live in `aidd_docs/`.
+
 ### Project memory
 
-<aidd_project_memory>
+<!-- aidd_project_memory:start -->
+
 @aidd_docs/memory/architecture.md
-@aidd_docs/memory/codebase_map.md
-@aidd_docs/memory/coding_assertions.md
-@aidd_docs/memory/deployment.md
-@aidd_docs/memory/golden_principles.md
-@aidd_docs/memory/project_brief.md
-@aidd_docs/memory/testing.md
-@aidd_docs/memory/vcs.md
-</aidd_project_memory>
+@aidd_docs/memory/project-brief.md
 
-- If memory is not loaded above: run `ls -1tr aidd_docs/memory/` then read each file
-- If needed: load files from `aidd_docs/memory/external/*` when user request it
-- If needed: load files from `aidd_docs/memory/internal/*`, you have to think about it
+<!-- aidd_project_memory:end -->
 
-
-## Project Config
-
-- `vcs_cli`: gh (detected from git remote, do not re-detect if present)
+- If the block above is empty, run `ls -1tr aidd_docs/memory/` and read each file.
+- Load `aidd_docs/memory/external/*` when the user asks.
+- Load `aidd_docs/memory/internal/*` when the task needs it.

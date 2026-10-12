@@ -1,76 +1,129 @@
-import { useState, useRef, useCallback } from 'react';
-import { Editor } from './components/Editor/Editor';
-import { Board } from './components/Board/Board';
-import { ReviewPanel } from './components/Review/ReviewPanel';
-import { SettingsPanel } from './components/Settings/SettingsPanel';
-import { ExportBar } from './components/ExportBar/ExportBar';
-import { useBoardSettings } from './hooks/useBoardSettings';
-import { decodeFromHash, encodeToHash, pushHash, clearHash } from './utils/permalink';
-import { saveRecent } from './utils/recentBoards';
-import type { MoodboardData } from './types';
-import './App.css';
+import { AppEmptyState } from '@/app/AppEmptyState'
+import { AppTopBar } from '@/app/AppTopBar'
+import { EditorView } from '@/app/EditorView'
+import { Button } from '@/components/ui/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { parseDocumentYaml } from '@/core/document/yaml'
+import { PrintDocument } from '@/export/PrintDocument'
+import { selectActiveDocument } from '@/core/workspace/selectors'
+import { useWorkspaceStore } from '@/core/workspace/store'
+import { TriangleAlert } from 'lucide-react'
+import { useRef, useState, type ChangeEvent } from 'react'
+import { toast } from 'sonner'
 
-type View = 'editor' | 'board';
-
-const restored = decodeFromHash();
+interface ImportFailure {
+    fileName: string
+    errors: string[]
+}
 
 export default function App() {
-  const [view, setView] = useState<View>(restored ? 'board' : 'editor');
-  const [data, setData] = useState<MoodboardData | null>(restored);
-  const [rawInput, setRawInput] = useState(restored ? JSON.stringify(restored, null, 2) : '');
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const boardRef = useRef<HTMLDivElement>(null);
-  const { settings, update, reset } = useBoardSettings();
+    const active = useWorkspaceStore(selectActiveDocument)
+    const saveError = useWorkspaceStore((state) => state.saveError)
+    const retrySave = useWorkspaceStore((state) => state.retrySave)
+    const importDocument = useWorkspaceStore((state) => state.importDocument)
 
-  const handleGenerate = useCallback((d: MoodboardData, raw: string) => {
-    setData(d);
-    setRawInput(raw);
-    setView('board');
-    const hash = encodeToHash(d);
-    pushHash(d);
-    saveRecent(d, hash);
-    window.scrollTo(0, 0);
-  }, []);
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [importFailure, setImportFailure] = useState<ImportFailure | null>(null)
 
-  const handleBack = useCallback(() => {
-    setView('editor');
-    setSettingsOpen(false);
-    clearHash();
-  }, []);
+    const pickFile = () => fileInputRef.current?.click()
 
-  const toggleSettings = useCallback(() => {
-    setSettingsOpen(prev => !prev);
-  }, []);
+    const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        // Vidé pour pouvoir choisir deux fois de suite le même fichier.
+        event.target.value = ''
+        if (!file) return
 
-  const filename = data
-    ? `moodboard-${data.scenario.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
-    : 'moodboard.pdf';
+        let text: string
+        try {
+            text = await file.text()
+        } catch {
+            setImportFailure({ fileName: file.name, errors: ['fichier illisible'] })
+            return
+        }
+        const result = parseDocumentYaml(text)
+        if (!result.ok) {
+            setImportFailure({ fileName: file.name, errors: result.errors })
+            return
+        }
+        importDocument(result.document)
+        toast.success(`« ${result.document.titre} » importé`)
+    }
 
-  return (
-    <>
-      {view === 'editor' && (
-        <Editor onGenerate={handleGenerate} initialValue={rawInput} />
-      )}
+    return (
+        <TooltipProvider>
+            <div className="flex h-dvh flex-col">
+                <AppTopBar onImport={pickFile} />
 
-      {view === 'board' && data && (
-        <>
-          <ExportBar
-            boardRef={boardRef}
-            filename={filename}
-            onBack={handleBack}
-            onToggleSettings={toggleSettings}
-          />
-          <Board ref={boardRef} data={data} settings={settings} />
-          <ReviewPanel data={data} />
-          <SettingsPanel
-            settings={settings}
-            onUpdate={update}
-            onReset={reset}
-            open={settingsOpen}
-            onToggle={toggleSettings}
-          />
-        </>
-      )}
-    </>
-  );
+                {saveError !== null && (
+                    <div
+                        role="alert"
+                        className="border-destructive/40 bg-destructive/10 flex items-center gap-3 border-b px-4 py-2 text-sm"
+                    >
+                        <TriangleAlert className="text-destructive size-4 shrink-0" />
+                        <p className="min-w-0 flex-1">
+                            La sauvegarde locale ne fonctionne plus : vos modifications seront
+                            perdues à la fermeture de l'onglet. Exportez le document en YAML pour
+                            le conserver. <span className="text-muted-foreground">({saveError})</span>
+                        </p>
+                        <Button variant="outline" size="sm" onClick={retrySave}>
+                            Réessayer
+                        </Button>
+                    </div>
+                )}
+
+                {active ? (
+                    <EditorView key={active.id} entry={active} />
+                ) : (
+                    <AppEmptyState onImport={pickFile} />
+                )}
+            </div>
+
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".yaml,.yml,application/yaml,text/yaml"
+                className="hidden"
+                aria-label="Fichier YAML à importer"
+                onChange={handleFile}
+            />
+
+            <Dialog
+                open={importFailure !== null}
+                onOpenChange={(open) => !open && setImportFailure(null)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Fichier refusé</DialogTitle>
+                        <DialogDescription>
+                            « {importFailure?.fileName} » n'a pas été importé. Aucun document n'a
+                            été créé.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <ul className="max-h-64 list-disc space-y-1 overflow-y-auto pl-5 text-sm">
+                        {importFailure?.errors.map((error, index) => (
+                            <li key={index} className="break-words">
+                                {error}
+                            </li>
+                        ))}
+                    </ul>
+                    <DialogFooter>
+                        <Button onClick={() => setImportFailure(null)}>Fermer</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {active && <PrintDocument doc={active.doc} />}
+
+            <Toaster position="bottom-right" />
+        </TooltipProvider>
+    )
 }

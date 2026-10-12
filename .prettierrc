@@ -1,0 +1,13 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "tailwindStylesheet": "./src/styles/index.css",
+    "tailwindFunctions": ["clsx", "cn", "cva"],
+    "plugins": [
+        "prettier-plugin-tailwindcss",
+        "prettier-plugin-organize-imports",
+        "prettier-plugin-css-order"
+    ]
+}
