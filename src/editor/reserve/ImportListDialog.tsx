@@ -49,8 +49,7 @@ export function ImportListDialog({ open, onOpenChange, existingUrls }: ImportLis
         const skipped = [
             report.ignored.length > 0 &&
                 plural(report.ignored.length, 'entrée ignorée', 'entrées ignorées'),
-            report.duplicates.length > 0 &&
-                plural(report.duplicates.length, 'doublon', 'doublons'),
+            report.duplicates.length > 0 && plural(report.duplicates.length, 'doublon', 'doublons'),
         ].filter(Boolean)
         toast.success(plural(addable, 'image ajoutée', 'images ajoutées'), {
             description: skipped.length > 0 ? skipped.join(' · ') : undefined,

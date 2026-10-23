@@ -13,8 +13,8 @@ export function AppEmptyState({ onImport }: AppEmptyStateProps) {
         <main className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
             <h1 className="text-xl font-semibold">Aucun document</h1>
             <p className="text-muted-foreground max-w-md text-sm">
-                Un document regroupe des images et les planches qui les mettent en page. Il
-                est conservé dans ce navigateur et s'exporte en fichier YAML.
+                Un document regroupe des images et les planches qui les mettent en page. Il est
+                conservé dans ce navigateur et s'exporte en fichier YAML.
             </p>
             <div className="flex gap-2">
                 <Button onClick={() => createDocument()}>

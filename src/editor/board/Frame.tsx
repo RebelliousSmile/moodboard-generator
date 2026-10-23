@@ -24,11 +24,7 @@ export function FrameContent({ image, caption, className }: FrameContentProps) {
     const placement = content ? caption.emplacement : 'masquee'
 
     return (
-        <div
-            data-status={status}
-            data-caption={placement}
-            className={cn('board-frame', className)}
-        >
+        <div data-status={status} data-caption={placement} className={cn('board-frame', className)}>
             <div className="board-frame-image">
                 {src && status !== 'error' && (
                     <img

@@ -60,7 +60,10 @@ export function PageStrip({ entry }: PageStripProps) {
                         >
                             <div
                                 className="pointer-events-none absolute top-0 left-0"
-                                style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+                                style={{
+                                    transform: `scale(${scale})`,
+                                    transformOrigin: 'top left',
+                                }}
                             >
                                 <PageView doc={doc} page={page} />
                             </div>

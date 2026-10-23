@@ -1,6 +1,6 @@
 import { appearanceVars } from '@/core/document/appearance'
-import { cellsToRect } from '@/core/document/grid'
 import { getPageFormat } from '@/core/document/formats'
+import { cellsToRect } from '@/core/document/grid'
 import type { AtelierDocument, DocumentPage } from '@/core/document/schema'
 import { FrameContent } from './Frame'
 

@@ -45,10 +45,7 @@ export interface WorkspaceState {
     renameDocument: (id: string, titre: string) => void
     duplicateDocument: (id: string) => string | null
     deleteDocument: (id: string) => void
-    updateDocument: (
-        id: string,
-        updater: (doc: AtelierDocument) => AtelierDocument
-    ) => void
+    updateDocument: (id: string, updater: (doc: AtelierDocument) => AtelierDocument) => void
     updateView: (id: string, patch: Partial<DocumentView>) => void
 
     /** Les actions sur les images portent sur le document actif. */

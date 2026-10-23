@@ -141,7 +141,9 @@ describe('parseDocument', () => {
     })
 
     it('refuse une marge, une grille ou un format hors bornes', () => {
-        expect(errorsOf({ titre: 'x', apparence: { marge: -1 } })[0]).toMatch(/^apparence\.marge : /)
+        expect(errorsOf({ titre: 'x', apparence: { marge: -1 } })[0]).toMatch(
+            /^apparence\.marge : /
+        )
         expect(errorsOf({ titre: 'x', grille: { colonnes: 0 } })[0]).toMatch(/^grille\.colonnes : /)
         expect(errorsOf({ titre: 'x', format: 'a5' })[0]).toMatch(/^format : format inconnu/)
     })

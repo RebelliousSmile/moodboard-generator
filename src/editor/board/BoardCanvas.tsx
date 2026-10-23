@@ -186,7 +186,10 @@ export function BoardCanvas({ entry, page }: BoardCanvasProps) {
                                     )}
                                 >
                                     {image && (
-                                        <FrameContent image={image} caption={doc.apparence.legende} />
+                                        <FrameContent
+                                            image={image}
+                                            caption={doc.apparence.legende}
+                                        />
                                     )}
                                 </div>
                             )

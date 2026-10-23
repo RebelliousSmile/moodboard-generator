@@ -9,7 +9,9 @@ interface CaptionProps {
 export function Caption({ content, placement }: CaptionProps) {
     return (
         <div className="board-caption" data-placement={placement}>
-            {content.descriptif !== '' && <p className="board-caption-text">{content.descriptif}</p>}
+            {content.descriptif !== '' && (
+                <p className="board-caption-text">{content.descriptif}</p>
+            )}
             {content.tags.length > 0 && (
                 <ul className="board-tags">
                     {content.tags.map((tag, index) => (

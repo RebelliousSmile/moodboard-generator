@@ -1,3 +1,4 @@
+import type { FormatId } from './formats'
 import {
     DEFAULT_FRAME_SPAN,
     findFreeSlot,
@@ -8,11 +9,8 @@ import {
 } from './grid'
 import { createEmptyPage } from './model'
 import type { AtelierDocument, DocumentFrame, DocumentGrid } from './schema'
-import type { FormatId } from './formats'
 
-export type PlacementResult =
-    | { ok: true; doc: AtelierDocument }
-    | { ok: false; reason: string }
+export type PlacementResult = { ok: true; doc: AtelierDocument } | { ok: false; reason: string }
 
 function refuse(reason: string): PlacementResult {
     return { ok: false, reason }
@@ -82,7 +80,10 @@ export function placeFrame(
     const page = doc.planches[index]
     const slot = findFreeSlot(span, page.cadres, doc.grille, target)
     if (!slot) return refuse('la planche n’a plus de place pour ce cadre')
-    return { ok: true, doc: replacePage(doc, pageId, [...page.cadres, { image: imageId, ...slot }]) }
+    return {
+        ok: true,
+        doc: replacePage(doc, pageId, [...page.cadres, { image: imageId, ...slot }]),
+    }
 }
 
 /** Remplace le rectangle d'un cadre (déplacement ou redimensionnement) ; refuse hors grille ou en collision. */

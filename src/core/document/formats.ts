@@ -25,12 +25,7 @@ export function mmToPx(mm: number): number {
     return Math.round(mm * PX_PER_MM)
 }
 
-function format(
-    id: FormatId,
-    label: string,
-    widthMm: number,
-    heightMm: number
-): PageFormat {
+function format(id: FormatId, label: string, widthMm: number, heightMm: number): PageFormat {
     return {
         id,
         label,

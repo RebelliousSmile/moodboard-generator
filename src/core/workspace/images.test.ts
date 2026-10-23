@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-    selectActiveDocument,
-    selectReserveImages,
-    selectSelectedImage,
-} from './selectors'
+import { selectActiveDocument, selectReserveImages, selectSelectedImage } from './selectors'
 import { createWorkspaceStore } from './store'
 import type { StorageLike } from './types'
 
