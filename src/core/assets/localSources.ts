@@ -1,9 +1,4 @@
-import {
-    deleteDocumentFiles,
-    deleteLocalFile,
-    listLocalFiles,
-    saveLocalFile,
-} from './localFiles'
+import { deleteDocumentFiles, deleteLocalFile, listLocalFiles, saveLocalFile } from './localFiles'
 
 /**
  * Les fichiers locaux d'un document, prêts à s'afficher : une adresse temporaire par image.

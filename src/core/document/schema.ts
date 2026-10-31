@@ -29,11 +29,9 @@ export const DEFAULT_FOCUS = { x: 50, y: 50 } as const
 
 const ID_PATTERN = /^[a-z0-9]+(_[a-z0-9]+)*$/
 
-const idSchema = z
-    .string({ error: 'identifiant manquant' })
-    .regex(ID_PATTERN, {
-        error: 'identifiant attendu en snake_case (lettres minuscules, chiffres, tirets bas)',
-    })
+const idSchema = z.string({ error: 'identifiant manquant' }).regex(ID_PATTERN, {
+    error: 'identifiant attendu en snake_case (lettres minuscules, chiffres, tirets bas)',
+})
 
 const percentSchema = z
     .number({ error: 'nombre attendu' })
@@ -126,10 +124,7 @@ const appearanceSchema = z
 
 export const documentSchema = z
     .object({
-        titre: z
-            .string({ error: 'titre manquant' })
-            .trim()
-            .min(1, { error: 'titre manquant' }),
+        titre: z.string({ error: 'titre manquant' }).trim().min(1, { error: 'titre manquant' }),
         format: z
             .enum(FORMAT_IDS, {
                 error: `format inconnu, attendu : ${FORMAT_IDS.join(', ')}`,
@@ -210,8 +205,7 @@ export type CaptionPlacement = (typeof CAPTION_PLACEMENTS)[number]
 export type FontId = (typeof FONT_IDS)[number]
 
 export type DocumentParseResult =
-    | { ok: true; document: AtelierDocument }
-    | { ok: false; errors: string[] }
+    { ok: true; document: AtelierDocument } | { ok: false; errors: string[] }
 
 function formatPath(path: PropertyKey[]): string {
     return path.reduce<string>((text, segment) => {

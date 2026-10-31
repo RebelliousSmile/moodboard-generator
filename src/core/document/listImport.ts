@@ -22,7 +22,7 @@ export type ListImportResult =
     | { ok: false; error: string }
 
 const SHAPE_ERROR =
-    'Liste illisible : un tableau d’images, ou un objet avec une clé « images », est attendu.'
+    'Liste illisible : des liens (un par ligne), un tableau d’images, ou un objet avec une clé « images » est attendu.'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -52,8 +52,8 @@ function readTags(value: unknown): string[] {
 }
 
 /**
- * Analyse une liste collée, en YAML ou en JSON. Les listes de l'ancien outil sont acceptées :
- * `lieu` et `description` alimentent le descriptif.
+ * Analyse une liste collée : des liens nus, un par ligne, ou des images en YAML ou en JSON. Les
+ * listes de l'ancien outil sont acceptées : `lieu` et `description` alimentent le descriptif.
  */
 export function parseImageList(
     text: string,
@@ -70,11 +70,19 @@ export function parseImageList(
         return { ok: false, error: `Liste illisible : ${reason}` }
     }
 
+    // Des liens nus, un par ligne, se lisent en YAML comme une seule chaîne repliée : on reprend
+    // les lignes du texte. Un texte sans aucun lien reste refusé.
+    const lines = text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
     const entries: unknown[] | null = Array.isArray(value)
         ? value
         : isRecord(value) && Array.isArray(value.images)
           ? value.images
-          : null
+          : typeof value === 'string' && lines.some(isHttpUrl)
+            ? lines
+            : null
     if (entries === null) return { ok: false, error: SHAPE_ERROR }
 
     const known = new Set(existingUrls)
@@ -82,8 +90,10 @@ export function parseImageList(
     const ignored: IgnoredEntry[] = []
     const duplicates: DuplicateEntry[] = []
 
-    entries.forEach((entry, index) => {
+    entries.forEach((rawEntry, index) => {
         const position = index + 1
+        // Un lien nu vaut une image sans descriptif ni tags.
+        const entry = typeof rawEntry === 'string' ? { url: rawEntry } : rawEntry
         if (!isRecord(entry)) {
             ignored.push({ position, reason: 'entrée illisible' })
             return

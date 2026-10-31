@@ -1,10 +1,6 @@
 import { slugify } from '@/utils/slug'
 import { dump, load } from 'js-yaml'
-import {
-    parseDocument,
-    type AtelierDocument,
-    type DocumentParseResult,
-} from './schema'
+import { parseDocument, type AtelierDocument, type DocumentParseResult } from './schema'
 
 /** Une clé YAML laissée vide (`descriptif:`) vaut null : elle est lue comme un champ absent. */
 function dropNulls(value: unknown): unknown {

@@ -15,11 +15,7 @@ export function useImageStatus(url: string) {
     const [settled, setSettled] = useState<SettledImage | null>(null)
 
     // Un résultat ne vaut que pour le lien qui l'a produit : changer de lien repart en chargement.
-    const status: ImageStatus = !url
-        ? 'empty'
-        : settled?.url === url
-          ? settled.status
-          : 'loading'
+    const status: ImageStatus = !url ? 'empty' : settled?.url === url ? settled.status : 'loading'
 
     return {
         status,

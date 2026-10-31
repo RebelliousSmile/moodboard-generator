@@ -116,7 +116,12 @@ interface SegmentedProps<T extends string | number> {
     onChange: (value: T) => void
 }
 
-function Segmented<T extends string | number>({ label, options, value, onChange }: SegmentedProps<T>) {
+function Segmented<T extends string | number>({
+    label,
+    options,
+    value,
+    onChange,
+}: SegmentedProps<T>) {
     return (
         <div role="group" aria-label={label} className="flex gap-1">
             {options.map((option) => (
@@ -149,7 +154,9 @@ export function ExportPanel({ entry }: ExportPanelProps) {
 
     const { doc } = entry
     const activePage = selectActivePage(entry)
-    const replacedCount = doc.images.filter((image) => sources.has(`${entry.id}:${image.id}`)).length
+    const replacedCount = doc.images.filter((image) =>
+        sources.has(`${entry.id}:${image.id}`)
+    ).length
 
     useEffect(() => {
         if (!open) return
@@ -193,7 +200,8 @@ export function ExportPanel({ entry }: ExportPanelProps) {
         setExporting(true)
         try {
             const { files, substituted } = await exportPagesPng(doc, pages, scale)
-            const done = files === 1 ? '1 fichier PNG téléchargé' : `${files} fichiers PNG téléchargés`
+            const done =
+                files === 1 ? '1 fichier PNG téléchargé' : `${files} fichiers PNG téléchargés`
             if (substituted > 0) {
                 toast.warning(
                     `${done}, mais ${substituted} image(s) n’ont pas pu être lues : leur emplacement porte un bloc de substitution.`

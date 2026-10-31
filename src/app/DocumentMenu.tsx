@@ -121,10 +121,7 @@ export function DocumentMenu() {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <Dialog
-                open={pending === 'rename'}
-                onOpenChange={(open) => !open && setPending(null)}
-            >
+            <Dialog open={pending === 'rename'} onOpenChange={(open) => !open && setPending(null)}>
                 <DialogContent>
                     <form onSubmit={submitRename} className="grid gap-4">
                         <DialogHeader>
@@ -164,12 +161,10 @@ export function DocumentMenu() {
             >
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Supprimer « {active?.doc.titre} » ?
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Supprimer « {active?.doc.titre} » ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Le document est retiré de ce navigateur. Sans fichier YAML exporté,
-                            il ne pourra pas être récupéré.
+                            Le document est retiré de ce navigateur. Sans fichier YAML exporté, il
+                            ne pourra pas être récupéré.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

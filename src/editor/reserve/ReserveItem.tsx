@@ -45,7 +45,10 @@ export function ReserveItem({ image, selected, onSelect }: ReserveItemProps) {
                         draggable={false}
                         onLoad={onLoad}
                         onError={onError}
-                        className={cn('size-full object-cover', status === 'loading' && 'opacity-0')}
+                        className={cn(
+                            'size-full object-cover',
+                            status === 'loading' && 'opacity-0'
+                        )}
                         style={{ objectPosition: `${image.focus.x}% ${image.focus.y}%` }}
                     />
                 )}

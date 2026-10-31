@@ -63,7 +63,11 @@ export function LocalFileField({ image }: LocalFileFieldProps) {
                         document et dans le fichier YAML.
                     </p>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => inputRef.current?.click()}
+                        >
                             <FileImage />
                             Changer
                         </Button>

@@ -11,10 +11,10 @@
 
     html,
     body {
-        height: auto;
         margin: 0;
-        padding: 0;
         background: #fff;
+        padding: 0;
+        height: auto;
     }
 
     .print-root {
@@ -24,9 +24,9 @@
     }
 
     .print-page {
-        overflow: hidden;
         break-after: page;
         break-inside: avoid;
+        overflow: hidden;
     }
 
     .print-page:last-child {

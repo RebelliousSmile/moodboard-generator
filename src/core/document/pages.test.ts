@@ -22,7 +22,12 @@ function documentWithImages(count: number): AtelierDocument {
 }
 
 function place(doc: AtelierDocument, imageId: string, x?: number, y?: number): AtelierDocument {
-    const result = placeFrame(doc, 'planche_1', imageId, x === undefined ? undefined : { x, y: y ?? 0 })
+    const result = placeFrame(
+        doc,
+        'planche_1',
+        imageId,
+        x === undefined ? undefined : { x, y: y ?? 0 }
+    )
     if (!result.ok) throw new Error(result.reason)
     return result.doc
 }

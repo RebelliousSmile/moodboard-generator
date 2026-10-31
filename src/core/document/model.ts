@@ -1,10 +1,5 @@
 import { DEFAULT_FORMAT } from './formats'
-import {
-    DEFAULT_APPEARANCE,
-    DEFAULT_GRID,
-    type AtelierDocument,
-    type DocumentPage,
-} from './schema'
+import { DEFAULT_APPEARANCE, DEFAULT_GRID, type AtelierDocument, type DocumentPage } from './schema'
 
 export const DEFAULT_DOCUMENT_TITLE = 'Sans titre'
 
@@ -20,9 +15,7 @@ export function createEmptyPage(existing: Iterable<string> = []): DocumentPage {
     return { id: createId('planche', existing), titre: '', cadres: [] }
 }
 
-export function createEmptyDocument(
-    titre: string = DEFAULT_DOCUMENT_TITLE
-): AtelierDocument {
+export function createEmptyDocument(titre: string = DEFAULT_DOCUMENT_TITLE): AtelierDocument {
     return {
         titre: titre.trim() || DEFAULT_DOCUMENT_TITLE,
         format: DEFAULT_FORMAT,

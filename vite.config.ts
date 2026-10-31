@@ -14,6 +14,20 @@ export default defineConfig({
         __APP_VERSION__: JSON.stringify(version),
     },
     plugins: [react(), tailwindcss()],
+    build: {
+        rolldownOptions: {
+            output: {
+                // React et zod changent rarement : chacun dans son fichier, ils restent en cache
+                // d'une version de l'application à l'autre.
+                codeSplitting: {
+                    groups: [
+                        { name: 'react', test: /node_modules\/(react|react-dom|scheduler)\// },
+                        { name: 'zod', test: /node_modules\/zod\// },
+                    ],
+                },
+            },
+        },
+    },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),

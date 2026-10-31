@@ -1,9 +1,5 @@
 import { createId } from './model'
-import {
-    DEFAULT_FOCUS,
-    type AtelierDocument,
-    type DocumentImage,
-} from './schema'
+import { DEFAULT_FOCUS, type AtelierDocument, type DocumentImage } from './schema'
 
 export interface ImageInput {
     url?: string
@@ -54,11 +50,7 @@ export function addImage(
     return { doc: result.doc, id: result.ids[0] }
 }
 
-export function updateImage(
-    doc: AtelierDocument,
-    id: string,
-    patch: ImagePatch
-): AtelierDocument {
+export function updateImage(doc: AtelierDocument, id: string, patch: ImagePatch): AtelierDocument {
     if (!doc.images.some((image) => image.id === id)) return doc
     return {
         ...doc,
@@ -88,8 +80,6 @@ export function removeImage(doc: AtelierDocument, id: string): AtelierDocument {
 
 /** Les images qui ne sont posées sur aucune planche. */
 export function unplacedImages(doc: AtelierDocument): DocumentImage[] {
-    const placed = new Set(
-        doc.planches.flatMap((page) => page.cadres.map((frame) => frame.image))
-    )
+    const placed = new Set(doc.planches.flatMap((page) => page.cadres.map((frame) => frame.image)))
     return doc.images.filter((image) => !placed.has(image.id))
 }

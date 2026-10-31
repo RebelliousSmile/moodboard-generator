@@ -13,9 +13,9 @@ import {
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { parseDocumentYaml } from '@/core/document/yaml'
-import { PrintDocument } from '@/export/PrintDocument'
 import { selectActiveDocument } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import { PrintDocument } from '@/export/PrintDocument'
 import { TriangleAlert } from 'lucide-react'
 import { useRef, useState, type ChangeEvent } from 'react'
 import { toast } from 'sonner'
@@ -71,8 +71,8 @@ export default function App() {
                         <TriangleAlert className="text-destructive size-4 shrink-0" />
                         <p className="min-w-0 flex-1">
                             La sauvegarde locale ne fonctionne plus : vos modifications seront
-                            perdues à la fermeture de l'onglet. Exportez le document en YAML pour
-                            le conserver. <span className="text-muted-foreground">({saveError})</span>
+                            perdues à la fermeture de l'onglet. Exportez le document en YAML pour le
+                            conserver. <span className="text-muted-foreground">({saveError})</span>
                         </p>
                         <Button variant="outline" size="sm" onClick={retrySave}>
                             Réessayer

@@ -112,7 +112,9 @@ export function AppearancePanel({ appearance }: AppearancePanelProps) {
                     <Select
                         value={legende.emplacement}
                         onValueChange={(value) =>
-                            updateAppearance({ legende: { emplacement: value as CaptionPlacement } })
+                            updateAppearance({
+                                legende: { emplacement: value as CaptionPlacement },
+                            })
                         }
                     >
                         <SelectTrigger id="caption-placement" className="w-full">

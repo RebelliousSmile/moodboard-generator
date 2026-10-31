@@ -1,8 +1,4 @@
-import {
-    copyDocumentFiles,
-    detachLocalFile,
-    purgeDocumentFiles,
-} from '@/core/assets/localSources'
+import { copyDocumentFiles, detachLocalFile, purgeDocumentFiles } from '@/core/assets/localSources'
 import { addImages, removeImage, updateImage } from '@/core/document/images'
 import { createEmptyDocument, createId } from '@/core/document/model'
 import {
@@ -16,11 +12,7 @@ import {
     setFrameCells as setFrameCellsIn,
     type PlacementResult,
 } from '@/core/document/pages'
-import {
-    DEFAULT_APPEARANCE,
-    documentSchema,
-    type AtelierDocument,
-} from '@/core/document/schema'
+import { DEFAULT_APPEARANCE, documentSchema, type AtelierDocument } from '@/core/document/schema'
 import { cloneValue } from '@/utils/clone'
 import { z } from 'zod'
 import { create } from 'zustand'
@@ -217,8 +209,7 @@ export function createWorkspaceStore(storage: StorageLike) {
                     const neighbour = documents[Math.min(index, documents.length - 1)]
                     return {
                         documents,
-                        activeId:
-                            state.activeId === id ? (neighbour?.id ?? null) : state.activeId,
+                        activeId: state.activeId === id ? (neighbour?.id ?? null) : state.activeId,
                     }
                 })
             },
@@ -312,7 +303,9 @@ export function createWorkspaceStore(storage: StorageLike) {
                         view: {
                             ...entry.view,
                             activePageId: keep ? entry.view.activePageId : (neighbour?.id ?? null),
-                            selectedImageId: selectedStillExists ? entry.view.selectedImageId : null,
+                            selectedImageId: selectedStillExists
+                                ? entry.view.selectedImageId
+                                : null,
                         },
                     }
                 })
