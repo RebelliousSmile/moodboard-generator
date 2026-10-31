@@ -93,6 +93,38 @@ describe('parseImageList', () => {
         })
     })
 
+    it('lit des liens nus, un par ligne, en ignorant les lignes vides', () => {
+        const result = parseImageList(`
+https://example.com/a.jpg
+
+  https://example.com/b.jpg
+pas un lien
+https://example.com/a.jpg
+`)
+        expect(result).toEqual({
+            ok: true,
+            images: [
+                { url: 'https://example.com/a.jpg', descriptif: '', tags: [] },
+                { url: 'https://example.com/b.jpg', descriptif: '', tags: [] },
+            ],
+            ignored: [{ position: 3, reason: 'lien mal formé : pas un lien' }],
+            duplicates: [{ position: 4, url: 'https://example.com/a.jpg' }],
+        })
+    })
+
+    it('lit un seul lien nu, et une liste YAML de liens', () => {
+        expect(parseImageList('https://example.com/a.jpg')).toMatchObject({
+            ok: true,
+            images: [{ url: 'https://example.com/a.jpg' }],
+        })
+        expect(
+            parseImageList('- https://example.com/a.jpg\n- https://example.com/b.jpg')
+        ).toMatchObject({
+            ok: true,
+            images: [{ url: 'https://example.com/a.jpg' }, { url: 'https://example.com/b.jpg' }],
+        })
+    })
+
     it('refuse un texte illisible ou sans liste', () => {
         for (const text of ['', 'bonjour tout le monde', '{ url: [', 'titre: seul', '42']) {
             const result = parseImageList(text)

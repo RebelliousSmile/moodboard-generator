@@ -24,12 +24,17 @@ function plural(count: number, singular: string, pluralForm: string): string {
     return `${count} ${count > 1 ? pluralForm : singular}`
 }
 
-const PLACEHOLDER = `- url: https://exemple.org/image.jpg
+const PLACEHOLDER = `https://exemple.org/image-1.jpg
+https://exemple.org/image-2.jpg
+
+ou, avec descriptif et tags :
+- url: https://exemple.org/image.jpg
   descriptif: Une plage au petit matin
   tags: [mer, lumière]`
 
 export function ImportListDialog({ open, onOpenChange, existingUrls }: ImportListDialogProps) {
     const addImages = useWorkspaceStore((state) => state.addImages)
+    const createDocument = useWorkspaceStore((state) => state.createDocument)
     const [text, setText] = useState('')
 
     const report = useMemo(
@@ -45,6 +50,8 @@ export function ImportListDialog({ open, onOpenChange, existingUrls }: ImportLis
 
     const submit = () => {
         if (!report?.ok || addable === 0) return
+        // Depuis l'écran de départ, aucun document n'est ouvert : la liste en crée un.
+        if (useWorkspaceStore.getState().activeId === null) createDocument()
         addImages(report.images)
         const skipped = [
             report.ignored.length > 0 &&
@@ -63,8 +70,8 @@ export function ImportListDialog({ open, onOpenChange, existingUrls }: ImportLis
                 <DialogHeader>
                     <DialogTitle>Coller une liste</DialogTitle>
                     <DialogDescription>
-                        Une liste d'images en YAML ou en JSON : un lien (url), et si besoin un
-                        descriptif et des tags.
+                        Des liens d'images, un par ligne, ou une liste en YAML ou en JSON avec, si
+                        besoin, un descriptif et des tags.
                     </DialogDescription>
                 </DialogHeader>
 
